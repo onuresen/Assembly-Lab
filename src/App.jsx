@@ -14,6 +14,7 @@ const CranePanel = lazy(() => import('./components/CranePanel'))
 const EarthquakePanel = lazy(() => import('./components/EarthquakePanel'))
 const FloorPlanPanel = lazy(() => import('./components/FloorPlanPanel'))
 const FirePanel = lazy(() => import('./components/FirePanel'))
+const DeliveryFlowPanel = lazy(() => import('./components/DeliveryFlowPanel'))
 
 export default function App() {
   const { parts, presets, isLoading, duplicatePart, removePart, undo, redo, canUndo, canRedo } = useKit()
@@ -48,6 +49,7 @@ export default function App() {
   const [placedUnits, setPlacedUnits] = useState([])
   const [selectedUnitType, setSelectedUnitType] = useState(null)
   const [factoryMode, setFactoryMode] = useState(false)
+  const [deliveryMode, setDeliveryMode] = useState(false)
 
   const [builderMode, setBuilderMode] = useState(false)
   const [cameraCmd, setCameraCmd] = useState(null)
@@ -266,6 +268,10 @@ export default function App() {
   const handleFramePart = useCallback(({ pos, size }) => {
     setCameraCmd({ type: 'frame', pos, size, ts: Date.now() })
   }, [])
+
+  const handleDeliverySelect = useCallback((partId) => {
+    setSelected(current => current?.id === partId ? current : parts.find(part => part.id === partId) ?? null)
+  }, [parts])
 
   function handleDuplicate() {
     if (selected) duplicatePart(selected.id)
@@ -543,6 +549,8 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
         onToggleSiteMode={toggleSiteMode}
         factoryMode={factoryMode}
         onToggleFactoryMode={toggleFactoryMode}
+        deliveryMode={deliveryMode}
+        onToggleDelivery={() => setDeliveryMode(value => !value)}
         sequenceMode={sequenceMode}
         onToggleSequence={toggleSequenceMode}
         gameMode={gameMode}
@@ -759,6 +767,14 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           visible={visible}
           showKenGrid={envSettings.kenGrid}
           onClose={() => setShowFloorPlan(false)}
+        />
+      )}</Suspense>
+
+      <Suspense fallback={null}>{deliveryMode && (
+        <DeliveryFlowPanel
+          selectedVariants={selectedVariants}
+          onSelectPart={handleDeliverySelect}
+          onClose={() => setDeliveryMode(false)}
         />
       )}</Suspense>
 

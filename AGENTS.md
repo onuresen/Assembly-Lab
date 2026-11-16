@@ -59,6 +59,11 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 - `SystemStudio.jsx` keeps system requirements separate from selected product values, evaluates explainable transport/lift/seismic rules, saves reusable recipes through presets, and exports the shared Product System v1 envelope.
 - Product System v1 round-trips through the existing JSON loader. Genba import/adaptation belongs to a later testing workflow; do not silently treat portable scenario inputs as verified results.
 
+### Group 3: factory-to-site flow
+
+- `deliveryFlow.js` derives production batches, truck loads, site buffer steps, installation order, and explainable transport/lift/lead-time bottlenecks from the current parts and requirements.
+- `DeliveryFlowPanel.jsx` is a lightweight four-stage playback. It selects the current part in the shared 3D view but does not add another render loop or duplicate factory/crane state.
+
 ### State Management (3 layers)
 
 **1. `src/KitContext.jsx`** — persistent, survives re-renders
