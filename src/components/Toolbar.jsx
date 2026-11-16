@@ -1,5 +1,5 @@
-import { createElement, useState } from 'react'
-import { MousePointer2, Pencil, Scissors, Copy, Trash2, Ruler, BarChart3, Map, Undo2, Redo2, Layers, Play, Zap, Moon, Sun, Keyboard, HardHat, Clapperboard, Activity, Wind, LayoutTemplate, Droplets, Menu, X, Flame, Shield, Thermometer, Volume2, Factory, Truck, Swords } from 'lucide-react'
+import { createElement } from 'react'
+import { MousePointer2, Pencil, Scissors, Copy, Trash2, Ruler, BarChart3, Map, Undo2, Redo2, Layers, Play, Zap, Moon, Sun, Keyboard, HardHat, Clapperboard, Activity, Wind, LayoutTemplate, Droplets, Menu, X, Flame, Shield, Thermometer, Volume2, Factory, Truck, Swords, Compass } from 'lucide-react'
 import ShareButton from './ShareButton'
 
 const WORKSPACES = [['design', 'Design'], ['flow', 'Factory → Site'], ['test', 'Test'], ['review', 'Review']]
@@ -9,7 +9,7 @@ function Tool({ icon, label, active, disabled, onClick, text, danger }) {
 }
 
 export default function Toolbar(p) {
-  const [workspace, setWorkspace] = useState('design')
+  const workspace = p.workspace
   const selectMode = !p.builderMode && !p.siteMode && !p.factoryMode && !p.sequenceMode && !p.gameMode
   function select() {
     if (p.builderMode) p.onToggleBuilderMode()
@@ -21,7 +21,7 @@ export default function Toolbar(p) {
   return <div className="workspace-tools">
     <nav className="workspace-tabs" aria-label="Workspace">
       <button className="tb-btn tb-btn--mobile-only" aria-label="Layers" onClick={p.onToggleMobileSidebar}>{p.mobileSidebarOpen ? <X size={15} /> : <Menu size={15} />}</button>
-      {WORKSPACES.map(([id, label]) => <button key={id} className={`workspace-tab${workspace === id ? ' workspace-tab--active' : ''}`} onClick={() => setWorkspace(id)}>{label}</button>)}
+      {WORKSPACES.map(([id, label]) => <button key={id} className={`workspace-tab${workspace === id ? ' workspace-tab--active' : ''}`} onClick={() => p.onWorkspaceChange(id)}>{label}</button>)}
     </nav>
     <div className="toolbar">
       {workspace === 'design' && <><div className="toolbar-group">
@@ -62,6 +62,7 @@ export default function Toolbar(p) {
         <Tool icon={Undo2} label="Undo" onClick={p.onUndo} disabled={!p.canUndo} />
         <Tool icon={Redo2} label="Redo" onClick={p.onRedo} disabled={!p.canRedo} />
         <Tool icon={p.darkMode ? Sun : Moon} label={p.darkMode ? 'Light mode' : 'Dark mode'} onClick={p.onToggleDark} />
+        <Tool icon={Compass} label="Guided discovery" active={p.discoveryOpen} onClick={p.onToggleDiscovery} />
         <Tool icon={Keyboard} label="Keyboard shortcuts" onClick={p.onToggleShortcuts} />
       </div>
     </div>

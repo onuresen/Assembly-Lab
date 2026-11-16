@@ -90,6 +90,12 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 - Baseline/Alternative changes the displayed affected subset and color language only; it does not mutate authored products or claim a verified engineering improvement.
 - Physical scenario buttons still activate the existing wind, rain, fire, or earthquake visualization. Environmental mood and evidence highlighting remain static and demand-rendered.
 
+### Group 9: guided discovery
+
+- First use offers a four-step, dismissible path through model exploration, component focus, system explosion, and Factory-to-Site. It is guidance, not a gate.
+- After completion, the surface becomes a contextual `Try this` prompt derived from current selection and workspace state. The compass toolbar control reopens or hides it at any time.
+- Completion persists locally as `ic-guided-discovery-seen`. Guidance adds no render loop, timers, scoring, or fabricated construction results.
+
 ### State Management (3 layers)
 
 **1. `src/KitContext.jsx`** — persistent, survives re-renders

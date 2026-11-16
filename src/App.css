@@ -3032,3 +3032,52 @@
     padding: 24px 20px;
   }
 }
+/* ─── Guided Discovery ───────────────────────────────────────────── */
+.discovery-card,
+.discovery-suggestion {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  color: var(--ui-ink);
+  background: color-mix(in srgb, var(--ui-panel) 94%, transparent);
+  border: 1px solid var(--ui-line);
+  box-shadow: var(--ui-shadow);
+  backdrop-filter: blur(18px) saturate(1.15);
+  animation: ui-rise 320ms var(--ease-out) both;
+}
+
+.discovery-card { width: min(520px, calc(100vw - 36px)); padding: 18px; border-radius: 20px; }
+.discovery-card header, .discovery-card footer, .discovery-card footer > div { display: flex; align-items: center; }
+.discovery-card header, .discovery-card footer { justify-content: space-between; gap: 12px; }
+.discovery-card header > span { display: flex; align-items: center; gap: 7px; color: var(--ui-teal); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.discovery-card header button, .discovery-close { border: 0; background: transparent; color: var(--ui-muted); cursor: pointer; }
+.discovery-progress { display: flex; gap: 5px; margin: 15px 0; }
+.discovery-progress i { width: 28px; height: 3px; border-radius: 9px; background: var(--ui-line); transition: background 180ms ease, width 180ms ease; }
+.discovery-progress i.active { width: 42px; background: var(--ui-teal); }
+.discovery-eyebrow { display: block; color: var(--ui-muted); font-size: 10px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.discovery-card > strong { display: block; margin-top: 5px; font-size: 21px; letter-spacing: -.025em; }
+.discovery-card p { margin: 7px 0 17px; color: var(--ui-muted); font-size: 13px; line-height: 1.55; }
+.discovery-card footer > div { gap: 7px; }
+.discovery-card footer button { min-height: 34px; padding: 0 12px; border-radius: 10px; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; }
+.discovery-skip { color: var(--ui-muted); background: transparent; border: 0; }
+.discovery-action { color: var(--ui-ink); background: var(--ui-soft); border: 1px solid var(--ui-line); }
+.discovery-next { display: inline-flex; align-items: center; gap: 5px; color: white; background: var(--ui-ink); border: 1px solid var(--ui-ink); }
+.discovery-suggestion { display: flex; align-items: center; gap: 10px; width: min(360px, calc(100vw - 36px)); padding: 10px 12px; border-radius: 16px; }
+.discovery-suggestion > svg { color: var(--ui-teal); }
+.discovery-suggestion > button:not(.discovery-close) { flex: 1; display: grid; grid-template-columns: auto 1fr; gap: 1px 8px; padding: 0; text-align: left; color: inherit; background: transparent; border: 0; cursor: pointer; }
+.discovery-suggestion span { grid-row: 1 / 3; align-self: center; color: var(--ui-teal); font-size: 9px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.discovery-suggestion strong { font-size: 12px; }
+.discovery-suggestion small { color: var(--ui-muted); font-size: 10px; }
+
+@media (max-width: 680px) {
+  .discovery-card { bottom: 14px; padding: 15px; }
+  .discovery-card footer { align-items: flex-end; }
+  .discovery-card footer > div { flex-direction: column; align-items: stretch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discovery-card, .discovery-suggestion { animation: none; }
+  .discovery-progress i { transition: none; }
+}

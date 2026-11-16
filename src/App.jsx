@@ -16,6 +16,7 @@ const FloorPlanPanel = lazy(() => import('./components/FloorPlanPanel'))
 const FirePanel = lazy(() => import('./components/FirePanel'))
 const DeliveryFlowPanel = lazy(() => import('./components/DeliveryFlowPanel'))
 const ScenarioArenaPanel = lazy(() => import('./components/ScenarioArenaPanel'))
+const GuidedDiscovery = lazy(() => import('./components/GuidedDiscovery'))
 
 export default function App() {
   const { parts, presets, isLoading, duplicatePart, removePart, undo, redo, canUndo, canRedo } = useKit()
@@ -106,6 +107,10 @@ export default function App() {
   const [showEarthquake, setShowEarthquake] = useState(false)
   const [showScenarioArena, setShowScenarioArena] = useState(false)
   const [scenarioPresentation, setScenarioPresentation] = useState(null)
+  const [activeWorkspace, setActiveWorkspace] = useState('design')
+  const [discoveryOpen, setDiscoveryOpen] = useState(() => {
+    try { return localStorage.getItem('ic-guided-discovery-seen') !== '1' } catch { return true }
+  })
   const [earthquakeMagnitude, setEarthquakeMagnitude] = useState(6.0)
   const [isShaking, setIsShaking] = useState(false)
   const [hasShaken, setHasShaken] = useState(false)
@@ -296,6 +301,19 @@ export default function App() {
     else if (scenarioId === 'rain') setShowWaterSim(true)
     else if (scenarioId === 'fire') { setFireMode(true); setFireState({}); setFireElapsed(0) }
     else setShowMetrics(true)
+  }
+
+  function changeWorkspace(workspace) {
+    setActiveWorkspace(workspace)
+    if (workspace !== 'flow') {
+      setDeliveryMode(false)
+      setDeliveryJourney(null)
+      deliveryStageRef.current = null
+    }
+    if (workspace !== 'test') {
+      setShowScenarioArena(false)
+      setScenarioPresentation(null)
+    }
   }
 
   function handleDuplicate() {
@@ -560,6 +578,10 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
     <div id="root-container" data-theme={darkMode ? 'dark' : 'light'}>
 
       <Toolbar
+        workspace={activeWorkspace}
+        onWorkspaceChange={changeWorkspace}
+        discoveryOpen={discoveryOpen}
+        onToggleDiscovery={() => setDiscoveryOpen(value => !value)}
         exploded={exploded}
         onToggleExplode={() => { setExploded(v => !v); setSequenceMode(false) }}
         builderMode={builderMode}
@@ -815,6 +837,24 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           onSelectPart={handleDeliverySelect}
           onAnalysis={setScenarioPresentation}
           onClose={() => { setShowScenarioArena(false); setScenarioPresentation(null) }}
+        />
+      )}</Suspense>
+
+      <Suspense fallback={null}>{discoveryOpen && (
+        <GuidedDiscovery
+          activeWorkspace={activeWorkspace}
+          selected={selected}
+          exploded={exploded}
+          deliveryMode={deliveryMode}
+          showScenarioArena={showScenarioArena}
+          showMetrics={showMetrics}
+          onSelectFirst={() => { const first = parts.find(part => visible[part.id]); if (first) { setSelected(first); handleFramePart(first) } }}
+          onToggleExplode={() => { setExploded(value => !value); setSequenceMode(false) }}
+          onWorkspaceChange={changeWorkspace}
+          onOpenDelivery={() => setDeliveryMode(true)}
+          onOpenScenario={() => setShowScenarioArena(true)}
+          onOpenMetrics={() => setShowMetrics(true)}
+          onClose={() => setDiscoveryOpen(false)}
         />
       )}</Suspense>
 
