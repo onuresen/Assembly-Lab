@@ -1,6 +1,6 @@
 # Group 5: Visual and Interaction Language
 
-Group 5 makes Kit of Parts feel responsive and inviting without turning it into a literal game.
+Group 5 makes Assembly Lab feel responsive and inviting without turning it into a literal game.
 
 ## Principles
 

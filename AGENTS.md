@@ -1,4 +1,4 @@
-# Kit-of-Parts
+# Assembly Lab
 
 ## Keeping This File Up to Date
 
@@ -18,11 +18,11 @@ Available gstack skills:
 
 ## Project Overview
 
-**Kit-of-Parts** is a client-side React SPA — a 3D interactive architectural configurator for modular/prefabricated building systems. Targets architects and engineers with focus on Japanese building standards (seismic, fire, Ken grid, CASBEE).
+**Assembly Lab** is a client-side React SPA — an interactive studio for industrialized and modular building systems. It targets architects and engineers with a focus on product systems, factory-to-site delivery, scenarios, and Japanese building standards.
 
 ### Assembly Lab rename program
 
-- **Assembly Lab** is the selected future product name; the current repository, Pages path, and runtime identity remain unchanged until their dedicated migration groups.
+- **Assembly Lab** is the active product name. During R1 the repository and Pages path intentionally remain `Kit-of-Parts` until their R2 cutover.
 - R0 is an evidence-only rename audit recorded in `docs/RENAME-R0-ASSEMBLY-LAB-AUDIT.md`.
 - Do not bulk-replace “kit of parts” across esen-vault: preserve generic construction terminology, quotations, event titles, lineage, and dated release history.
 - Planned sequence: R1 product identity, R2 repository/deployment cutover, R3 ecosystem references, R4 verification/cleanup. Commit and push after each group.
@@ -55,7 +55,7 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 ### Group 0 product spine
 
 - `src/contracts/productSystem.js` is the versioned interchange envelope shared with Genba Lab. Keep the two copies byte-for-byte compatible.
-- Kit of Parts remains the ideal-system authoring playground; it does not absorb Genba Lab's IFC testing runtime.
+- Assembly Lab remains the ideal-system authoring playground; it does not absorb Genba Lab's IFC testing runtime.
 - The toolbar is workspace-led: Design, Factory to Site, Test, and Review. Existing keyboard shortcuts remain global.
 - Secondary panels are loaded on first use with React lazy boundaries. See `docs/GROUP-0-FOUNDATION.md` for the performance budgets and loading policy.
 
@@ -101,7 +101,7 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 
 - First use offers a four-step, dismissible path through model exploration, component focus, system explosion, and Factory-to-Site. It is guidance, not a gate.
 - After completion, the surface becomes a contextual `Try this` prompt derived from current selection and workspace state. The compass toolbar control reopens or hides it at any time.
-- Completion persists locally as `ic-guided-discovery-seen`. Guidance adds no render loop, timers, scoring, or fabricated construction results.
+- Completion persists locally as `assembly-lab-guided-discovery-seen`, with legacy-key migration. Guidance adds no render loop, timers, scoring, or fabricated construction results.
 
 ### State Management (3 layers)
 
@@ -109,7 +109,7 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 - `parts[]` — array of part objects (CRUD, undo/redo 30-step history)
 - `presets[]` — named variant configurations
 - `projectSettings` — `{ currency: 'USD'|'JPY', standard: 'JP'|'EN' }`
-- Auto-saves to `localStorage` key `ic-kit-save`
+- Auto-saves to `localStorage` key `assembly-lab-save`; reads and migrates legacy `ic-kit-save`
 - File I/O: load/export kit JSON
 - Exposes: `duplicatePart`, `removePart`, `undo`, `redo`, `canUndo`, `canRedo`, `formatCurrency`
 
@@ -135,7 +135,7 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 | `factoryMode` | bool | Prefab factory layout planner active |
 | `builderMode` | bool | Part editor mode |
 | `cameraCmd` | object\|null | `{ type:'preset'\|'frame', ...opts, ts }` — change `ts` to re-fire |
-| `darkMode` | bool | Persisted to localStorage `ic-dark` |
+| `darkMode` | bool | Persisted to `assembly-lab-theme`; reads and migrates legacy `ic-dark` |
 | `showShortcuts` | bool | Keyboard shortcuts modal |
 | `showCrane` | bool | Crane 3D + panel visible |
 | `showCraneRadius` | bool | Crane reach rings visible |

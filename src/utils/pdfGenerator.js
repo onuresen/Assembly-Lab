@@ -209,7 +209,7 @@ export function generatePDF(parts, selectedVariants, visible, projectSettings, f
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     doc.setTextColor(150, 150, 150)
-    doc.text(`IC Configurator  ·  施工要領書  ·  ${today()}  ·  Part ${idx + 1}/${parts.length}`, MARGIN, 290)
+    doc.text(`Assembly Lab  ·  施工要領書  ·  ${today()}  ·  Part ${idx + 1}/${parts.length}`, MARGIN, 290)
     doc.setTextColor(0, 0, 0)
   })
 

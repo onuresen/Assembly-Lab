@@ -1,6 +1,6 @@
 # General-view gate before IFC
 
-This gate must pass before Kit-of-Parts is copied, extracted into a shared 3D
+This gate must pass before Assembly Lab is copied, extracted into a shared 3D
 foundation, or used as the starting point for the IFC Sandbox.
 
 ## What the gate proves

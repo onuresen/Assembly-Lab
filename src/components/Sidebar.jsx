@@ -103,7 +103,7 @@ export default function Sidebar({
     <aside className={`sidebar${isOpen ? ' sidebar--open' : ''}`}>
       <button className="sidebar-close-btn" onClick={onClose} aria-label="Close">✕</button>
       <div className="sidebar-brand">
-        IC Configurator
+        Assembly Lab
         <button
           className={`currency-toggle ${projectSettings.currency === 'JPY' ? 'currency-toggle--active' : ''}`}
           title={projectSettings.currency === 'JPY' ? 'Switch to USD' : 'Switch to JPY (¥)'}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, Compass, Sparkles, X } from 'lucide-react'
+import { writeAssemblyStorage } from '../utils/storageMigration'
 
 const TOUR_STEPS = [
   {
@@ -67,11 +68,11 @@ export default function GuidedDiscovery({
 
   function finishTour() {
     setTourComplete(true)
-    try { localStorage.setItem('ic-guided-discovery-seen', '1') } catch { /* optional persistence */ }
+    try { writeAssemblyStorage('discovery', '1') } catch { /* optional persistence */ }
   }
 
   function dismiss() {
-    try { localStorage.setItem('ic-guided-discovery-seen', '1') } catch { /* optional persistence */ }
+    try { writeAssemblyStorage('discovery', '1') } catch { /* optional persistence */ }
     onClose()
   }
 

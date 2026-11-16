@@ -2,11 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { inferStcRating, inferSupplyRisk, inferThermalConductivity } from '../utils/materialMetrics';
 import { isProductSystem, productSystemEnvelope } from '../contracts/productSystem';
 import { getSystemBlueprint } from '../data/systemBlueprints';
+import { clearAssemblyStorage, readAssemblyStorage, writeAssemblyStorage } from '../utils/storageMigration';
 
 const KitContext = createContext();
 
 const DEFAULT_PROJECT = {
-  name: 'IC Kit',
+  name: 'Assembly Lab System',
   currency: 'USD',
   jpyRate: 155,
   standard: 'UK',
@@ -104,7 +105,7 @@ export function KitProvider({ children }) {
   }
 
   useEffect(() => {
-    const saved = localStorage.getItem('ic-kit-save');
+    const saved = readAssemblyStorage('kit');
     if (saved) {
       try {
         const data = JSON.parse(saved);
@@ -133,7 +134,7 @@ export function KitProvider({ children }) {
 
   useEffect(() => {
     if (!isLoading && parts.length > 0) {
-      localStorage.setItem('ic-kit-save', JSON.stringify({ parts, presets, projectSettings }));
+      writeAssemblyStorage('kit', JSON.stringify({ parts, presets, projectSettings }));
     }
   }, [parts, presets, projectSettings, isLoading]);
 
@@ -325,7 +326,7 @@ export function KitProvider({ children }) {
       interfaces: system.interfaces,
       rules: system.rules,
       scenarios: [],
-      provenance: { authoredIn: 'Kit of Parts', exportedAt: new Date().toISOString(), requirements: system.requirements },
+      provenance: { authoredIn: 'Assembly Lab', exportedAt: new Date().toISOString(), requirements: system.requirements },
     });
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -365,7 +366,7 @@ export function KitProvider({ children }) {
   };
 
   const clearAutoSave = () => {
-    localStorage.removeItem('ic-kit-save');
+    clearAssemblyStorage('kit');
     window.location.reload();
   };
 

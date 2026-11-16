@@ -1,4 +1,4 @@
-# Kit-of-Parts
+# Assembly Lab
 
 ## Keeping This File Up to Date
 
@@ -18,7 +18,7 @@ Available gstack skills:
 
 ## Project Overview
 
-**Kit-of-Parts** is a client-side React SPA — a 3D interactive architectural configurator for modular/prefabricated building systems. Targets architects and engineers with focus on Japanese building standards (seismic, fire, Ken grid, CASBEE).
+**Assembly Lab** is a client-side React SPA — an interactive studio for industrialized and modular building systems. It targets architects and engineers with a focus on product systems, factory-to-site delivery, scenarios, and Japanese building standards.
 
 **Dev server:** `npm run dev` (Vite on localhost:5173)
 **Build:** `npm run build` → `/dist/`
@@ -51,7 +51,7 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 - `parts[]` — array of part objects (CRUD, undo/redo 30-step history)
 - `presets[]` — named variant configurations
 - `projectSettings` — `{ currency: 'USD'|'JPY', standard: 'JP'|'EN' }`
-- Auto-saves to `localStorage` key `ic-kit-save`
+- Auto-saves to `localStorage` key `assembly-lab-save`; reads and migrates legacy `ic-kit-save`
 - File I/O: load/export kit JSON
 - Exposes: `duplicatePart`, `removePart`, `undo`, `redo`, `canUndo`, `canRedo`, `formatCurrency`
 
@@ -77,7 +77,7 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 | `factoryMode` | bool | Prefab factory layout planner active |
 | `builderMode` | bool | Part editor mode |
 | `cameraCmd` | object\|null | `{ type:'preset'\|'frame', ...opts, ts }` — change `ts` to re-fire |
-| `darkMode` | bool | Persisted to localStorage `ic-dark` |
+| `darkMode` | bool | Persisted to `assembly-lab-theme`; reads and migrates legacy `ic-dark` |
 | `showShortcuts` | bool | Keyboard shortcuts modal |
 | `showCrane` | bool | Crane 3D + panel visible |
 | `showCraneRadius` | bool | Crane reach rings visible |

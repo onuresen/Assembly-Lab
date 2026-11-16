@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar'
 import Toolbar from './components/Toolbar'
 import ViewCube from './components/ViewCube'
 import { useKit } from './components/KitContext'
+import { readAssemblyStorage, writeAssemblyStorage } from './utils/storageMigration'
 import './App.css'
 
 const MetricsPanel = lazy(() => import('./components/MetricsPanel'))
@@ -58,7 +59,7 @@ export default function App() {
   const [builderMode, setBuilderMode] = useState(false)
   const [cameraCmd, setCameraCmd] = useState(null)
 
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('ic-dark') === 'true')
+  const [darkMode, setDarkMode] = useState(() => readAssemblyStorage('theme') === 'true')
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showCrane, setShowCrane] = useState(false)
   const [showCraneRadius, setShowCraneRadius] = useState(false)
@@ -109,7 +110,7 @@ export default function App() {
   const [scenarioPresentation, setScenarioPresentation] = useState(null)
   const [activeWorkspace, setActiveWorkspace] = useState('design')
   const [discoveryOpen, setDiscoveryOpen] = useState(() => {
-    try { return localStorage.getItem('ic-guided-discovery-seen') !== '1' } catch { return true }
+    try { return readAssemblyStorage('discovery') !== '1' } catch { return true }
   })
   const [earthquakeMagnitude, setEarthquakeMagnitude] = useState(6.0)
   const [isShaking, setIsShaking] = useState(false)
@@ -126,7 +127,7 @@ export default function App() {
   })()
 
   useEffect(() => {
-    localStorage.setItem('ic-dark', darkMode)
+    writeAssemblyStorage('theme', String(darkMode))
   }, [darkMode])
 
   useEffect(() => {
@@ -535,7 +536,7 @@ export default function App() {
     const fs1 = Math.round(bH * 0.28), fs2 = Math.round(bH * 0.22), fs3 = Math.round(bH * 0.18)
     ctx.font = `700 ${fs1}px "Segoe UI",system-ui,sans-serif`
     ctx.fillStyle = '#ffffff'
-    ctx.fillText('Kit-of-Parts', bX + pad, bY + bH * 0.34)
+    ctx.fillText('Assembly Lab', bX + pad, bY + bH * 0.34)
 
     ctx.font = `500 ${fs2}px "Segoe UI",system-ui,sans-serif`
     ctx.fillStyle = 'rgba(255,255,255,0.75)'
@@ -546,14 +547,14 @@ export default function App() {
 
     ctx.font = `400 ${fs3}px "Segoe UI",system-ui,sans-serif`
     ctx.fillStyle = 'rgba(255,255,255,0.45)'
-    ctx.fillText('onuresen47.github.io/Kit-of-Parts', bX + pad, bY + bH * 0.92)
+    ctx.fillText('onuresen.github.io/Kit-of-Parts', bX + pad, bY + bH * 0.92)
 
     const link = document.createElement('a')
-    link.download = 'kit-of-parts.png'
+    link.download = 'assembly-lab.png'
     link.href = cvs.toDataURL('image/png')
     link.click()
 
-    const caption = `Designed with Kit-of-Parts — open-source 3D modular building configurator.
+    const caption = `Designed with Assembly Lab — an interactive industrialized building systems studio.
 
 📐 ${shareMetrics.parts} prefab components
 ♻️ ${shareMetrics.carbon} kg CO₂e embodied carbon · CASBEE rank ${shareMetrics.casbee}
@@ -561,7 +562,7 @@ export default function App() {
 
 Built in React + Three.js with real-time cost, carbon & IFC export.
 
-🔗 Try it live: https://onuresen47.github.io/Kit-of-Parts/`
+🔗 Try it live: https://onuresen.github.io/Kit-of-Parts/`
 
     try { await navigator.clipboard.writeText(caption) } catch { /* clipboard unavailable */ }
   }

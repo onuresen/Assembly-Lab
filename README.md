@@ -1,4 +1,4 @@
-# Kit-of-Parts — 3D Modular Building Configurator
+# Assembly Lab — Interactive Industrialized Building Systems
 
 <div align="center">
 
@@ -9,7 +9,7 @@
 ![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite)
 [![Deploy](https://img.shields.io/badge/GitHub%20Pages-live-blue?logo=github)](https://onuresen.github.io/Kit-of-Parts/)
 
-*In-browser 3D configurator for modular / prefabricated building systems — with structural simulations, Japanese compliance checks, and real-time cost & carbon tracking.*
+*An interactive studio for designing, assembling, delivering, and testing industrialized building systems.*
 
 **[→ Open Live Demo](https://onuresen.github.io/Kit-of-Parts/)**
 
@@ -17,11 +17,11 @@
 
 ---
 
-## What is Kit-of-Parts?
+## What is Assembly Lab?
 
-Kit-of-Parts is a client-side React SPA that lets architects and engineers assemble, analyse, and simulate modular building systems directly in the browser — no install, no server. Load a bundled sample kit or import your own JSON, then explore the building in 3D, run earthquake or fire simulations, check Japanese seismic and fire compliance, and export a cost/carbon/BOM report to PDF.
+Assembly Lab is a client-side React SPA that lets architects and engineers design, assemble, analyse, and simulate industrialized building systems directly in the browser — no install, no server. Load a bundled sample system or import your own JSON, then explore the building in 3D, follow it from factory to site, run earthquake or fire scenarios, check Japanese seismic and fire compliance, and export cost, carbon, BOM, PDF, and IFC evidence.
 
-> **"Configure once. Simulate everything."**
+> **"Design the system. Follow it to site."**
 
 It does **not** replace a BIM tool. It sits alongside one — as a lightweight, shareable decision layer for early-stage design and prefab planning.
 
@@ -109,7 +109,7 @@ Load via the **Sidebar → Sample Kit** buttons, or drag and drop your own JSON.
 
 ## Compliance Standards
 
-Kit-of-Parts implements Japanese building compliance data at the variant level:
+Assembly Lab implements Japanese building compliance data at the variant level:
 
 | Standard | Field | Values |
 |---|---|---|
@@ -289,6 +289,6 @@ public/
 
 ## State Persistence
 
-Kit data auto-saves to `localStorage` key `ic-kit-save` on every change. Dark mode preference persists under `ic-dark`. Export/import full kit state as JSON via the Sidebar file controls.
+System data auto-saves to `localStorage` key `assembly-lab-save` on every change. Theme and guided-discovery preferences use `assembly-lab-theme` and `assembly-lab-guided-discovery-seen`. Existing `ic-kit-save`, `ic-dark`, and `ic-guided-discovery-seen` values are read and migrated automatically. Export/import full system state as JSON via the Sidebar file controls.
 
 More public projects: [Onur Esen's builder portfolio](https://onuresen.github.io/).

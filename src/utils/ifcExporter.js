@@ -94,8 +94,8 @@ export function exportIFC(parts, selectedVariants) {
   const header = [
     'ISO-10303-21;',
     'HEADER;',
-    `FILE_DESCRIPTION(('IC Configurator IFC Export','ViewDefinition [CoordinationView]'),'2;1');`,
-    `FILE_NAME('ic-kit.ifc','${new Date().toISOString()}',('IC Configurator'),('Anthropic'),'web-browser','IC Configurator 1.0','');`,
+    `FILE_DESCRIPTION(('Assembly Lab IFC Export','ViewDefinition [CoordinationView]'),'2;1');`,
+    `FILE_NAME('assembly-lab.ifc','${new Date().toISOString()}',('Assembly Lab'),('Assembly Lab'),'web-browser','Assembly Lab 1.0','');`,
     `FILE_SCHEMA(('IFC2X3'));`,
     'ENDSEC;',
     'DATA;',
@@ -104,9 +104,9 @@ export function exportIFC(parts, selectedVariants) {
   // ── Core project entities ──────────────────────────────────
   push(
     entity(idPerson,    'IFCPERSON',    ['$', fmt('IC'), fmt('Configurator'), '$', '$', '$', '$', '$']),
-    entity(idOrg,       'IFCORGANIZATION', ['$', fmt('IC Configurator'), '$', '$', '$']),
+    entity(idOrg,       'IFCORGANIZATION', ['$', fmt('Assembly Lab'), '$', '$', '$']),
     entity(idPersonOrg, 'IFCPERSONANDORGANIZATION', [`#${idPerson}`, `#${idOrg}`, '$']),
-    entity(idApp,       'IFCAPPLICATION', [`#${idOrg}`, fmt('1.0'), fmt('IC Configurator'), fmt('IC-CONF')]),
+    entity(idApp,       'IFCAPPLICATION', [`#${idOrg}`, fmt('1.0'), fmt('Assembly Lab'), fmt('ASSEMBLY-LAB')]),
     entity(idOwnerHistory, 'IFCOWNERHISTORY', [
       `#${idPersonOrg}`, `#${idApp}`, '$', '.NOCHANGE.', '$', '$', '$',
       String(Math.floor(Date.now() / 1000))
@@ -147,9 +147,9 @@ export function exportIFC(parts, selectedVariants) {
 
   // Owner
   const person    = E('IFCPERSON',       `$,'IC','Configurator',$,$,$,$,$`)
-  const org       = E('IFCORGANIZATION', `$,'IC Configurator',$,$,$`)
+  const org       = E('IFCORGANIZATION', `$,'Assembly Lab',$,$,$`)
   const personOrg = E('IFCPERSONANDORGANIZATION', `${R(person)},${R(org)},$`)
-  const app       = E('IFCAPPLICATION',  `${R(org)},'1.0','IC Configurator','IC-CONF'`)
+  const app       = E('IFCAPPLICATION',  `${R(org)},'1.0','Assembly Lab','ASSEMBLY-LAB'`)
   const ownerHist = E('IFCOWNERHISTORY', `${R(personOrg)},${R(app)},$,.NOCHANGE.,$,$,$,${Math.floor(Date.now() / 1000)}`)
 
   // Geometry contexts
@@ -253,8 +253,8 @@ export function exportIFC(parts, selectedVariants) {
   const stepHeader = [
     'ISO-10303-21;',
     'HEADER;',
-    `FILE_DESCRIPTION(('IC Configurator IFC 2x3 Export'),'2;1');`,
-    `FILE_NAME('ic-kit.ifc','${new Date().toISOString()}',('IC Configurator'),('ic-configurator'),'jsPDF','IC Configurator 1.0','');`,
+    `FILE_DESCRIPTION(('Assembly Lab IFC 2x3 Export'),'2;1');`,
+    `FILE_NAME('assembly-lab.ifc','${new Date().toISOString()}',('Assembly Lab'),('assembly-lab'),'jsPDF','Assembly Lab 1.0','');`,
     `FILE_SCHEMA(('IFC2X3'));`,
     'ENDSEC;',
     'DATA;',
@@ -268,7 +268,7 @@ export function exportIFC(parts, selectedVariants) {
   const url  = URL.createObjectURL(blob)
   const a    = document.createElement('a')
   a.href = url
-  a.download = 'ic-kit.ifc'
+  a.download = 'assembly-lab.ifc'
   a.click()
   URL.revokeObjectURL(url)
 }
