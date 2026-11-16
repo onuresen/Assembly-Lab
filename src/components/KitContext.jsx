@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { inferStcRating, inferSupplyRisk, inferThermalConductivity } from '../utils/materialMetrics';
+import { isProductSystem, productSystemEnvelope } from '../contracts/productSystem';
+import { getSystemBlueprint } from '../data/systemBlueprints';
 
 const KitContext = createContext();
 
@@ -10,7 +12,26 @@ const DEFAULT_PROJECT = {
   standard: 'UK',
   casbee_building_type: 'residential',
   casbee_target_rank: 'A',
+  productSystem: {
+    id: 'custom-system', name: 'Custom Product System', kind: 'custom', families: [], interfaces: [], rules: [],
+    requirements: { min_seismic_grade: 2, max_transport_width_m: 3, max_part_weight_kg: 3000 },
+  },
 };
+
+function normalizeProjectSettings(settings = {}) {
+  return {
+    ...DEFAULT_PROJECT,
+    ...settings,
+    productSystem: {
+      ...DEFAULT_PROJECT.productSystem,
+      ...(settings.productSystem ?? {}),
+      requirements: {
+        ...DEFAULT_PROJECT.productSystem.requirements,
+        ...(settings.productSystem?.requirements ?? {}),
+      },
+    },
+  };
+}
 
 function normalizeParts(parts) {
   return (parts || []).map(part => ({
@@ -89,7 +110,7 @@ export function KitProvider({ children }) {
         const data = JSON.parse(saved);
         setPartsInternal(normalizeParts(data.parts));
         setPresets(data.presets || []);
-        if (data.projectSettings) setProjectSettings({ ...DEFAULT_PROJECT, ...data.projectSettings });
+        if (data.projectSettings) setProjectSettings(normalizeProjectSettings(data.projectSettings));
         setIsLoading(false);
         return;
       } catch (err) {}
@@ -101,7 +122,7 @@ export function KitProvider({ children }) {
       .then((data) => {
         setPartsInternal(normalizeParts(data.parts));
         setPresets(data.presets || []);
-        if (data.projectSettings) setProjectSettings({ ...DEFAULT_PROJECT, ...data.projectSettings });
+        if (data.projectSettings) setProjectSettings(normalizeProjectSettings(data.projectSettings));
         setIsLoading(false);
       })
       .catch((err) => {
@@ -121,12 +142,28 @@ export function KitProvider({ children }) {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        if (data.parts && data.presets) {
+        if (isProductSystem(data)) {
+          setPartsNoHistory(normalizeParts(data.parts));
+          setPresets([{ id: 'imported-base', label: 'Imported base', description: 'Imported Product System v1', variants: {}, visible: Object.fromEntries(data.parts.map(part => [part.id, true])) }]);
+          setProjectSettings(current => normalizeProjectSettings({
+            ...current,
+            name: data.name,
+            productSystem: {
+              id: data.id,
+              name: data.name,
+              kind: 'imported',
+              families: [...new Set(data.parts.map(part => part.family).filter(Boolean))],
+              interfaces: data.interfaces ?? [],
+              rules: data.rules ?? [],
+              requirements: data.provenance?.requirements ?? DEFAULT_PROJECT.productSystem.requirements,
+            },
+          }));
+        } else if (data.parts && data.presets) {
           setPartsNoHistory(normalizeParts(data.parts));
           setPresets(data.presets);
-          if (data.projectSettings) setProjectSettings({ ...DEFAULT_PROJECT, ...data.projectSettings });
+          if (data.projectSettings) setProjectSettings(normalizeProjectSettings(data.projectSettings));
         } else {
-          alert('Invalid kit format. Missing parts or presets array.');
+          alert('Invalid file. Expected a Product System v1 document or legacy kit with parts and presets.');
         }
       } catch (err) {
         alert('Failed to parse kit JSON file.');
@@ -146,7 +183,7 @@ export function KitProvider({ children }) {
         if (data.parts && data.presets) {
           setPartsNoHistory(normalizeParts(data.parts));
           setPresets(data.presets);
-          setProjectSettings({ ...DEFAULT_PROJECT, ...data.projectSettings });
+          setProjectSettings(normalizeProjectSettings(data.projectSettings));
         } else {
           alert('Invalid bundled kit format. Missing parts or presets array.');
         }
@@ -242,6 +279,63 @@ export function KitProvider({ children }) {
     });
   };
 
+  const snapPart = (id, grid = 0.1) => {
+    setParts(prev => prev.map(p => p.id === id ? {
+      ...p,
+      pos: p.pos.map(value => Math.round(value / grid) * grid),
+      exp: p.exp?.map(value => Math.round(value / grid) * grid),
+    } : p));
+  };
+
+  const rotatePart = (id) => {
+    setParts(prev => prev.map(p => p.id === id ? {
+      ...p,
+      rotation_y_deg: ((p.rotation_y_deg ?? 0) + 90) % 360,
+      size: [p.size[2], p.size[1], p.size[0]],
+    } : p));
+  };
+
+  const replacePartFamily = (id, family) => {
+    const interfaceByFamily = { pod: 'corner-cast', foundation: 'base-plate', frame: 'dry-fit', cassette: 'dry-fit', envelope: 'dry-fit', service: 'bolted' };
+    setParts(prev => prev.map(p => p.id === id ? { ...p, family, module_type: family, interface_type: interfaceByFamily[family] ?? 'dry-fit' } : p));
+  };
+
+  const loadSystemBlueprint = (id) => {
+    const blueprint = getSystemBlueprint(id);
+    if (!blueprint) return;
+    setPartsNoHistory(normalizeParts(structuredClone(blueprint.parts)));
+    setPresets(structuredClone(blueprint.presets));
+    setProjectSettings(current => normalizeProjectSettings({ ...current, name: blueprint.name, productSystem: blueprint.productSystem }));
+  };
+
+  const updateProductSystem = (patch) => {
+    setProjectSettings(current => normalizeProjectSettings({
+      ...current,
+      productSystem: { ...current.productSystem, ...patch },
+    }));
+  };
+
+  const exportProductSystem = (selectedVariants = {}) => {
+    const system = projectSettings.productSystem;
+    const activeParts = parts.map(part => ({ ...part, selected_variant: selectedVariants[part.id] ?? 0 }));
+    const payload = productSystemEnvelope({
+      id: system.id,
+      name: system.name,
+      parts: activeParts,
+      interfaces: system.interfaces,
+      rules: system.rules,
+      scenarios: [],
+      provenance: { authoredIn: 'Kit of Parts', exportedAt: new Date().toISOString(), requirements: system.requirements },
+    });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${system.id || 'product-system'}.product-system.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const exportKit = () => {
     const dataObj = { parts, presets, projectSettings };
     const blob = new Blob([JSON.stringify(dataObj, null, 2)], { type: 'application/json' });
@@ -281,6 +375,7 @@ export function KitProvider({ children }) {
       projectSettings, setProjectSettings, formatCurrency,
       loadKitFromFile, loadBundledKit, isLoading,
       addPart, duplicatePart, updatePart, updatePartSequences, removePart, exportKit, clearAutoSave,
+      snapPart, rotatePart, replacePartFamily, loadSystemBlueprint, updateProductSystem, exportProductSystem,
       savePreset, removePreset, addConnection, removeConnection,
       undo, redo, canUndo, canRedo,
     }}>

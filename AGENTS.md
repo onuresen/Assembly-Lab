@@ -45,6 +45,20 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 
 ## Architecture
 
+### Group 0 product spine
+
+- `src/contracts/productSystem.js` is the versioned interchange envelope shared with Genba Lab. Keep the two copies byte-for-byte compatible.
+- Kit of Parts remains the ideal-system authoring playground; it does not absorb Genba Lab's IFC testing runtime.
+- The toolbar is workspace-led: Design, Factory to Site, Test, and Review. Existing keyboard shortcuts remain global.
+- Secondary panels are loaded on first use with React lazy boundaries. See `docs/GROUP-0-FOUNDATION.md` for the performance budgets and loading policy.
+
+### Groups 1 and 2: playground and studio
+
+- `src/data/systemBlueprints.js` owns the four lightweight starter systems: timber frame, precast platform, volumetric pods, and hybrid chassis. Keep them semantic and inexpensive to render.
+- Builder mode supports 100 mm snapping, 90 degree rotation, family replacement, and explicit interface feedback. These are authoring moves, not structural analysis.
+- `SystemStudio.jsx` keeps system requirements separate from selected product values, evaluates explainable transport/lift/seismic rules, saves reusable recipes through presets, and exports the shared Product System v1 envelope.
+- Product System v1 round-trips through the existing JSON loader. Genba import/adaptation belongs to a later testing workflow; do not silently treat portable scenario inputs as verified results.
+
 ### State Management (3 layers)
 
 **1. `src/KitContext.jsx`** — persistent, survives re-renders

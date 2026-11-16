@@ -1,302 +1,67 @@
-import {
-  MousePointer2, Pencil, Scissors, Copy, Trash2,
-  Ruler, BarChart3, Map, Undo2, Redo2, Layers, Play, Zap,
-  Moon, Sun, Keyboard, HardHat, Clapperboard, Camera, Activity, Wind, LayoutTemplate,
-  Droplets, Menu, X, Flame, Shield, Thermometer, Volume2, Factory
-} from 'lucide-react'
+import { createElement, useState } from 'react'
+import { MousePointer2, Pencil, Scissors, Copy, Trash2, Ruler, BarChart3, Map, Undo2, Redo2, Layers, Play, Zap, Moon, Sun, Keyboard, HardHat, Clapperboard, Activity, Wind, LayoutTemplate, Droplets, Menu, X, Flame, Shield, Thermometer, Volume2, Factory } from 'lucide-react'
 import ShareButton from './ShareButton'
 
-export default function Toolbar({
-  exploded, onToggleExplode,
-  builderMode, onToggleBuilderMode,
-  sectionCutActive, onToggleSectionCut,
-  showDimensions, onToggleDimensions,
-  showMetrics, onToggleMetrics,
-  siteMode, onToggleSiteMode,
-  factoryMode, onToggleFactoryMode,
-  sequenceMode, onToggleSequence,
-  gameMode, onStartGame,
-  selected,
-  onDuplicate, onDelete,
-  darkMode, onToggleDark, onToggleShortcuts,
-  onUndo, onRedo, canUndo, canRedo,
-  showCrane, onToggleCrane,
-  onShare, shareMetrics,
-  cinematicMode, onToggleCinematic,
-  showEarthquake, onToggleEarthquake,
-  showWindArrows, onToggleWindArrows,
-  showWaterSim, onToggleWaterSim,
-  showThermal, onToggleThermal,
-  showAcoustic, onToggleAcoustic,
-  onShowFloorPlan,
-  fireMode, onToggleFireMode,
-  showFireCompartments, onToggleFireCompartments,
-  mobileSidebarOpen, onToggleMobileSidebar,
-}) {
-  const isSelectMode = !builderMode && !siteMode && !factoryMode && !sequenceMode && !gameMode
+const WORKSPACES = [['design', 'Design'], ['flow', 'Factory → Site'], ['test', 'Test'], ['review', 'Review']]
 
-  function handleSelectMode() {
-    if (builderMode) onToggleBuilderMode()
-    if (siteMode) onToggleSiteMode()
-    if (factoryMode) onToggleFactoryMode()
-    if (sequenceMode) onToggleSequence()
+function Tool({ icon, label, active, disabled, onClick, text, danger }) {
+  return <button className={`tb-btn${text ? ' tb-btn--text' : ''}${active ? ' tb-btn--active' : ''}${danger && active ? ' tb-btn--danger' : ''}`} title={label} aria-label={label} aria-pressed={active ?? undefined} onClick={onClick} disabled={disabled}>{createElement(icon, { size: text ? 13 : 15 })}{text}</button>
+}
+
+export default function Toolbar(p) {
+  const [workspace, setWorkspace] = useState('design')
+  const selectMode = !p.builderMode && !p.siteMode && !p.factoryMode && !p.sequenceMode && !p.gameMode
+  function select() {
+    if (p.builderMode) p.onToggleBuilderMode()
+    if (p.siteMode) p.onToggleSiteMode()
+    if (p.factoryMode) p.onToggleFactoryMode()
+    if (p.sequenceMode) p.onToggleSequence()
   }
 
-  return (
+  return <div className="workspace-tools">
+    <nav className="workspace-tabs" aria-label="Workspace">
+      <button className="tb-btn tb-btn--mobile-only" aria-label="Layers" onClick={p.onToggleMobileSidebar}>{p.mobileSidebarOpen ? <X size={15} /> : <Menu size={15} />}</button>
+      {WORKSPACES.map(([id, label]) => <button key={id} className={`workspace-tab${workspace === id ? ' workspace-tab--active' : ''}`} onClick={() => setWorkspace(id)}>{label}</button>)}
+    </nav>
     <div className="toolbar">
-
-      <button
-        className={`tb-btn tb-btn--mobile-only ${mobileSidebarOpen ? 'tb-btn--active' : ''}`}
-        title="Layers"
-        onClick={onToggleMobileSidebar}
-      >
-        {mobileSidebarOpen ? <X size={15} /> : <Menu size={15} />}
-      </button>
-      <div className="toolbar-sep tb-sep--mobile-only" />
-
-      <div className="toolbar-group">
-        <button
-          className={`tb-btn ${isSelectMode ? 'tb-btn--active' : ''}`}
-          title="Select"
-          onClick={handleSelectMode}
-        >
-          <MousePointer2 size={15} />
-        </button>
-        <button
-          className={`tb-btn ${builderMode ? 'tb-btn--active' : ''}`}
-          title="Builder Mode"
-          onClick={onToggleBuilderMode}
-          disabled={siteMode || factoryMode || sequenceMode || gameMode}
-        >
-          <Pencil size={15} />
-        </button>
-        <button
-          className={`tb-btn ${sectionCutActive ? 'tb-btn--active' : ''}`}
-          title="Section Cut"
-          onClick={onToggleSectionCut}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Scissors size={15} />
-        </button>
+      {workspace === 'design' && <><div className="toolbar-group">
+        <Tool icon={MousePointer2} label="Select" active={selectMode} onClick={select} />
+        <Tool icon={Pencil} label="Edit parts" active={p.builderMode} onClick={p.onToggleBuilderMode} disabled={p.siteMode || p.factoryMode || p.sequenceMode || p.gameMode} />
+        <Tool icon={Copy} label="Duplicate selected part" onClick={p.onDuplicate} disabled={!p.selected || !p.builderMode} />
+        <Tool icon={Trash2} label="Delete selected part" onClick={p.onDelete} disabled={!p.selected || !p.builderMode} />
+      </div><div className="toolbar-sep" /><div className="toolbar-group">
+        <Tool icon={Scissors} label="Section cut" active={p.sectionCutActive} onClick={p.onToggleSectionCut} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={Ruler} label="Dimensions" active={p.showDimensions} onClick={p.onToggleDimensions} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={Zap} label={p.exploded ? 'Assemble' : 'Explode'} text={p.exploded ? 'ASSEMBLE' : 'EXPLODE'} active={p.exploded} onClick={p.onToggleExplode} disabled={p.sequenceMode || p.siteMode || p.factoryMode || p.gameMode} />
+      </div></>}
+      {workspace === 'flow' && <div className="toolbar-group">
+        <Tool icon={Map} label="Site plan" active={p.siteMode} onClick={p.onToggleSiteMode} disabled={p.sequenceMode || p.builderMode || p.factoryMode || p.gameMode} />
+        <Tool icon={Factory} label="Factory layout" active={p.factoryMode} onClick={p.onToggleFactoryMode} disabled={p.sequenceMode || p.builderMode || p.siteMode || p.gameMode} />
+        <Tool icon={Layers} label="Assembly sequence" active={p.sequenceMode} onClick={p.onToggleSequence} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={HardHat} label="Tower crane" active={p.showCrane} onClick={p.onToggleCrane} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+      </div>}
+      {workspace === 'test' && <div className="toolbar-group">
+        <Tool icon={Activity} label="Earthquake" active={p.showEarthquake} onClick={p.onToggleEarthquake} disabled={p.factoryMode || p.gameMode} />
+        <Tool icon={Wind} label="Wind" active={p.showWindArrows} onClick={p.onToggleWindArrows} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={Droplets} label="Rain and water" active={p.showWaterSim} onClick={p.onToggleWaterSim} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={Flame} label="Fire" active={p.fireMode} danger onClick={p.onToggleFireMode} disabled={p.factoryMode || p.gameMode} />
+        <Tool icon={Shield} label="Fire compartments" active={p.showFireCompartments} onClick={p.onToggleFireCompartments} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+      </div>}
+      {workspace === 'review' && <div className="toolbar-group">
+        <Tool icon={Thermometer} label="Thermal bridges" active={p.showThermal} onClick={p.onToggleThermal} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={Volume2} label="Acoustics" active={p.showAcoustic} onClick={p.onToggleAcoustic} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={LayoutTemplate} label="Floor plan" onClick={p.onShowFloorPlan} disabled={p.siteMode || p.factoryMode || p.gameMode} />
+        <Tool icon={BarChart3} label="Metrics" active={p.showMetrics} onClick={p.onToggleMetrics} disabled={p.gameMode} />
+      </div>}
+      <div className="toolbar-sep" /><div className="toolbar-group">
+        <Tool icon={Play} label="Assembly challenge" text="GAME" onClick={p.onStartGame} disabled={p.gameMode} />
+        <Tool icon={Clapperboard} label="Demo tour" text="DEMO" active={p.cinematicMode} onClick={p.onToggleCinematic} disabled={p.gameMode || p.builderMode || p.factoryMode} />
+        <ShareButton shareMetrics={p.shareMetrics} onShare={p.onShare} disabled={p.gameMode} />
+        <Tool icon={Undo2} label="Undo" onClick={p.onUndo} disabled={!p.canUndo} />
+        <Tool icon={Redo2} label="Redo" onClick={p.onRedo} disabled={!p.canRedo} />
+        <Tool icon={p.darkMode ? Sun : Moon} label={p.darkMode ? 'Light mode' : 'Dark mode'} onClick={p.onToggleDark} />
+        <Tool icon={Keyboard} label="Keyboard shortcuts" onClick={p.onToggleShortcuts} />
       </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <button
-          className="tb-btn"
-          title="Duplicate selected part"
-          onClick={onDuplicate}
-          disabled={!selected || !builderMode}
-        >
-          <Copy size={15} />
-        </button>
-        <button
-          className="tb-btn"
-          title="Delete selected part"
-          onClick={onDelete}
-          disabled={!selected || !builderMode}
-        >
-          <Trash2 size={15} />
-        </button>
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <button
-          className={`tb-btn ${showDimensions ? 'tb-btn--active' : ''}`}
-          title="Dimension Overlay"
-          onClick={onToggleDimensions}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Ruler size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showMetrics ? 'tb-btn--active' : ''}`}
-          title="Metrics (Cost · Carbon · BOM)"
-          onClick={onToggleMetrics}
-          disabled={gameMode}
-        >
-          <BarChart3 size={15} />
-        </button>
-        <button
-          className={`tb-btn ${siteMode ? 'tb-btn--active' : ''}`}
-          title="Site Plan"
-          onClick={onToggleSiteMode}
-          disabled={sequenceMode || builderMode || factoryMode || gameMode}
-        >
-          <Map size={15} />
-        </button>
-        <button
-          className={`tb-btn ${factoryMode ? 'tb-btn--active' : ''}`}
-          title="Prefab Factory Layout"
-          onClick={onToggleFactoryMode}
-          disabled={sequenceMode || builderMode || siteMode || gameMode}
-        >
-          <Factory size={15} />
-        </button>
-        <button
-          className={`tb-btn ${sequenceMode ? 'tb-btn--active' : ''}`}
-          title="Assembly Sequence"
-          onClick={onToggleSequence}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Layers size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showCrane ? 'tb-btn--active' : ''}`}
-          title="Tower Crane"
-          onClick={onToggleCrane}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <HardHat size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showEarthquake ? 'tb-btn--active' : ''}`}
-          title="Earthquake Simulation"
-          onClick={onToggleEarthquake}
-          disabled={factoryMode || gameMode}
-        >
-          <Activity size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showWindArrows ? 'tb-btn--active' : ''}`}
-          title="Wind Load Arrows"
-          onClick={onToggleWindArrows}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Wind size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showWaterSim ? 'tb-btn--active' : ''}`}
-          title="Water Analysis"
-          onClick={onToggleWaterSim}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Droplets size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showThermal ? 'tb-btn--active' : ''}`}
-          title="Thermal Bridge Visualizer"
-          onClick={onToggleThermal}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Thermometer size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showAcoustic ? 'tb-btn--active' : ''}`}
-          title="Acoustic Performance Overlay"
-          onClick={onToggleAcoustic}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Volume2 size={15} />
-        </button>
-        <button
-          className="tb-btn"
-          title="Floor Plan"
-          onClick={onShowFloorPlan}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <LayoutTemplate size={15} />
-        </button>
-        <button
-          className={`tb-btn ${fireMode ? 'tb-btn--active' : ''}`}
-          title="Fire Spread Simulation"
-          onClick={onToggleFireMode}
-          disabled={factoryMode || gameMode}
-          style={fireMode ? { color: '#e74c3c' } : {}}
-        >
-          <Flame size={15} />
-        </button>
-        <button
-          className={`tb-btn ${showFireCompartments ? 'tb-btn--active' : ''}`}
-          title="Fire Compartment Visualizer"
-          onClick={onToggleFireCompartments}
-          disabled={siteMode || factoryMode || gameMode}
-        >
-          <Shield size={15} />
-        </button>
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <button className="tb-btn" title="Undo (Ctrl+Z)" onClick={onUndo} disabled={!canUndo}>
-          <Undo2 size={15} />
-        </button>
-        <button className="tb-btn" title="Redo (Ctrl+Y)" onClick={onRedo} disabled={!canRedo}>
-          <Redo2 size={15} />
-        </button>
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <button
-          className={`tb-btn tb-btn--text ${exploded ? 'tb-btn--active' : ''}`}
-          title="Explode / Assemble"
-          onClick={onToggleExplode}
-          disabled={sequenceMode || siteMode || factoryMode || gameMode}
-        >
-          <Zap size={13} />
-          {exploded ? 'ASSEMBLE' : 'EXPLODE'}
-        </button>
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <button
-          className="tb-btn tb-btn--game"
-          title="Assembly Challenge Game"
-          onClick={onStartGame}
-          disabled={gameMode}
-        >
-          <Play size={13} />
-          GAME
-        </button>
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <button
-          className={`tb-btn tb-btn--text ${cinematicMode ? 'tb-btn--active' : ''}`}
-          title="Cinematic demo tour"
-          onClick={onToggleCinematic}
-          disabled={gameMode || builderMode || factoryMode}
-        >
-          <Clapperboard size={13} />
-          DEMO
-        </button>
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <ShareButton shareMetrics={shareMetrics} onShare={onShare} disabled={gameMode} />
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="toolbar-group">
-        <button
-          className="tb-btn"
-          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          onClick={onToggleDark}
-        >
-          {darkMode ? <Sun size={15} /> : <Moon size={15} />}
-        </button>
-        <button
-          className="tb-btn"
-          title="Keyboard shortcuts (?)"
-          onClick={onToggleShortcuts}
-        >
-          <Keyboard size={15} />
-        </button>
-      </div>
-
     </div>
-  )
+  </div>
 }

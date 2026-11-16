@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import { useKit } from './KitContext'
 
 export default function BuilderPanel({ selected }) {
-  const { parts, updatePart, addPart, duplicatePart, removePart, exportKit, clearAutoSave } = useKit()
+  const { parts, updatePart, addPart, duplicatePart, removePart, exportKit, clearAutoSave, snapPart, rotatePart, replacePartFamily } = useKit()
 
   const part = selected ? parts.find(p => p.id === selected.id) : null
   const glbInputRef = useRef()
@@ -78,6 +78,25 @@ export default function BuilderPanel({ selected }) {
             </select>
           </label>
 
+          <label style={{ fontSize: '11px', display: 'block' }}>Product family:
+            <select value={part.family ?? 'frame'} onChange={e => replacePartFamily(part.id, e.target.value)} style={{ width: '100%', fontSize: '12px', padding: '4px' }}>
+              <option value="foundation">Foundation</option>
+              <option value="frame">Frame</option>
+              <option value="cassette">Cassette</option>
+              <option value="envelope">Envelope</option>
+              <option value="pod">Volumetric pod</option>
+              <option value="service">Service module</option>
+            </select>
+          </label>
+
+          <div className="playground-actions">
+            <button onClick={() => snapPart(part.id, 0.1)}>Snap 100 mm</button>
+            <button onClick={() => rotatePart(part.id)}>Rotate 90°</button>
+          </div>
+          <div className="playground-readout">
+            Position {part.pos.map(n => n.toFixed(2)).join(', ')} m · Rotation {part.rotation_y_deg ?? 0}° · Interface {part.interface_type ?? 'unset'}
+          </div>
+
           {(part.shape === 'cylinder') ? (
             <div style={{ display: 'flex', gap: '4px' }}>
               <label style={{ fontSize: '11px', flex: 1 }}>Radius Top:
@@ -148,6 +167,20 @@ export default function BuilderPanel({ selected }) {
             <input type="checkbox" checked={!!part.transparent} onChange={e => updatePart(part.id, { transparent: e.target.checked })} style={{ marginRight: '6px' }} />
             Transparent
           </label>
+
+          <div style={{ margin: '8px 0 4px', borderTop: '1px solid #ccc' }} />
+
+          <div className="interface-check">
+            <strong>Connections</strong>
+            {(part.connections ?? []).length === 0 && <span>No interfaces connected yet</span>}
+            {(part.connections ?? []).map(connection => {
+              const target = parts.find(candidate => candidate.id === connection.to)
+              const compatible = !target || !part.interface_type || !target.interface_type || part.interface_type === target.interface_type || connection.type === 'bolted'
+              return <span key={`${connection.to}-${connection.type}`} className={compatible ? 'interface-ok' : 'interface-warning'}>
+                {compatible ? '✓' : '!'} {connection.to} · {connection.type}{compatible ? '' : ' · interface mismatch'}
+              </span>
+            })}
+          </div>
 
           <div style={{ margin: '8px 0 4px', borderTop: '1px solid #ccc' }} />
 

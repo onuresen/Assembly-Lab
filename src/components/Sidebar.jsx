@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useKit } from './KitContext'
 import BuilderPanel from './BuilderPanel'
+import SystemStudio from './SystemStudio'
 
 function EyeOpen() {
   return (
@@ -168,6 +169,8 @@ export default function Sidebar({
       )}
 
       {/* ── Presets ── */}
+      {!siteMode && !factoryMode && !gameMode && <SystemStudio selectedVariants={selectedVariants} visible={visible} />}
+
       {!siteMode && !builderMode && (
         <>
           <div className="sidebar-section-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

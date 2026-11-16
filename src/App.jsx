@@ -1,18 +1,19 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react'
 import Scene from './components/Scene'
 import InfoPanel from './components/InfoPanel'
 import Sidebar from './components/Sidebar'
 import Toolbar from './components/Toolbar'
-import MetricsPanel from './components/MetricsPanel'
-import GameScorePanel from './components/GameScorePanel'
-import ShortcutsModal from './components/ShortcutsModal'
 import ViewCube from './components/ViewCube'
-import CranePanel from './components/CranePanel'
-import EarthquakePanel from './components/EarthquakePanel'
-import FloorPlanPanel from './components/FloorPlanPanel'
-import FirePanel from './components/FirePanel'
 import { useKit } from './components/KitContext'
 import './App.css'
+
+const MetricsPanel = lazy(() => import('./components/MetricsPanel'))
+const GameScorePanel = lazy(() => import('./components/GameScorePanel'))
+const ShortcutsModal = lazy(() => import('./components/ShortcutsModal'))
+const CranePanel = lazy(() => import('./components/CranePanel'))
+const EarthquakePanel = lazy(() => import('./components/EarthquakePanel'))
+const FloorPlanPanel = lazy(() => import('./components/FloorPlanPanel'))
+const FirePanel = lazy(() => import('./components/FirePanel'))
 
 export default function App() {
   const { parts, presets, isLoading, duplicatePart, removePart, undo, redo, canUndo, canRedo } = useKit()
@@ -684,7 +685,7 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
         showAcoustic={showAcoustic}
       />
 
-      {showMetrics && (
+      <Suspense fallback={null}>{showMetrics && (
         <MetricsPanel
           selectedVariants={selectedVariants}
           visible={visible}
@@ -693,20 +694,20 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           highlightedWeek={highlightedWeek}
           onHighlightWeek={w => setHighlightedWeek(w)}
         />
-      )}
+      )}</Suspense>
 
-      {gameMode && gamePhase === 'complete' && (
+      <Suspense fallback={null}>{gameMode && gamePhase === 'complete' && (
         <GameScorePanel
           mistakes={gameMistakes}
           elapsed={gameElapsed}
           onPlayAgain={startGame}
           onExit={exitGame}
         />
-      )}
+      )}</Suspense>
 
-      {showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)} />}
+      <Suspense fallback={null}>{showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)} />}</Suspense>
 
-      {showCrane && (
+      <Suspense fallback={null}>{showCrane && (
         <CranePanel
           sequenceMode={sequenceMode}
           sequenceStep={sequenceStep}
@@ -727,9 +728,9 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           craneCabView={craneCabView}
           onToggleCabView={() => setCraneCabView(v => !v)}
         />
-      )}
+      )}</Suspense>
 
-      {fireMode && (
+      <Suspense fallback={null}>{fireMode && (
         <FirePanel
           fireState={fireState}
           fireElapsed={fireElapsed}
@@ -739,9 +740,9 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           onExtinguish={handleExtinguish}
           selectedVariants={selectedVariants}
         />
-      )}
+      )}</Suspense>
 
-      {showEarthquake && (
+      <Suspense fallback={null}>{showEarthquake && (
         <EarthquakePanel
           magnitude={earthquakeMagnitude}
           onMagnitude={setEarthquakeMagnitude}
@@ -751,15 +752,15 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           hasShaken={hasShaken}
           selectedVariants={selectedVariants}
         />
-      )}
+      )}</Suspense>
 
-      {showFloorPlan && (
+      <Suspense fallback={null}>{showFloorPlan && (
         <FloorPlanPanel
           visible={visible}
           showKenGrid={envSettings.kenGrid}
           onClose={() => setShowFloorPlan(false)}
         />
-      )}
+      )}</Suspense>
 
       <ViewCube onPreset={handleCameraPreset} darkMode={darkMode} />
 

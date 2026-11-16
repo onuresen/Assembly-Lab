@@ -6,6 +6,45 @@
 }
 
 /* ─── Toolbar ─────────────────────────────────────────────── */
+.workspace-tools {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.workspace-tab {
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #647383;
+  padding: 5px 9px;
+  font: 700 10px/1 'Segoe UI', sans-serif;
+  cursor: pointer;
+}
+
+.workspace-tab--active { background: #2c3e50; color: white; }
+
+.workspace-tools .toolbar {
+  position: static;
+  transform: none;
+}
+
 .toolbar {
   position: fixed;
   top: 12px;
@@ -97,6 +136,43 @@
 }
 
 /* ─── AI Optimiser Panel ─────────────────────────────────── */
+.system-studio { margin: 4px 0 12px; }
+.system-blueprints { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.system-blueprints button { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 7px; border: 1px solid #dce2e7; border-radius: 6px; background: #fff; color: #34495e; text-align: left; cursor: pointer; }
+.system-blueprints button:hover, .system-blueprints button.active { border-color: #3498db; background: #eef7fd; }
+.system-blueprints strong { font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.system-blueprints span { font-size: 8px; color: #7b8791; text-transform: uppercase; letter-spacing: .06em; }
+.studio-details { margin-top: 7px; border: 1px solid #dce2e7; border-radius: 6px; background: rgba(255,255,255,.72); }
+.studio-details summary { padding: 8px; font-size: 10px; font-weight: 800; cursor: pointer; }
+.studio-details[open] { padding: 0 8px 8px; }
+.studio-details label { display: flex; flex-direction: column; gap: 3px; margin-top: 7px; font-size: 9px; color: #66737e; }
+.studio-details input { min-width: 0; border: 1px solid #ccd5dc; border-radius: 4px; padding: 5px 6px; font-size: 11px; }
+.studio-subhead { margin-top: 10px; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8b98a2; }
+.studio-family-row { display: flex; flex-direction: column; gap: 2px; margin-top: 7px; font-size: 9px; color: #7b8791; }
+.studio-family-row strong { color: #34495e; font-size: 10px; line-height: 1.4; }
+.rule-summary { display: flex; flex-direction: column; gap: 2px; margin-top: 10px; padding: 7px; border-radius: 5px; font-size: 9px; }
+.rule-summary strong { font-size: 11px; }
+.rule-summary--pass { background: #eaf8ef; color: #24723c; }
+.rule-summary--issues { background: #fff1e7; color: #a84e18; }
+.rule-issues { display: flex; flex-direction: column; gap: 3px; margin-top: 5px; }
+.rule-issues button { display: flex; flex-direction: column; border: 0; border-left: 2px solid #e67e22; background: #fff8f1; padding: 5px 6px; text-align: left; color: #5d493c; }
+.rule-issues strong, .rule-issues span { font-size: 9px; }
+.recipe-row { display: flex; gap: 4px; margin-top: 5px; }
+.recipe-row input { flex: 1; }
+.recipe-row button, .product-system-export, .playground-actions button { border: 0; border-radius: 4px; background: #2c3e50; color: white; padding: 6px 8px; font-size: 10px; cursor: pointer; }
+.recipe-row button:disabled { opacity: .4; }
+.product-system-export { width: 100%; margin-top: 6px; background: #1f8a62; }
+.playground-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.playground-actions button { background: #456b84; }
+.playground-readout { padding: 6px; border-radius: 4px; background: #edf1f4; color: #5f6b73; font-size: 9px; line-height: 1.4; }
+.interface-check { display: flex; flex-direction: column; gap: 4px; font-size: 10px; }
+.interface-check span { padding: 4px 5px; border-radius: 4px; }
+.interface-ok { background: #eaf8ef; color: #24723c; }
+.interface-warning { background: #fff1e7; color: #a84e18; }
+[data-theme="dark"] .system-blueprints button, [data-theme="dark"] .studio-details { background: #26313e; border-color: #3b4856; color: #dce5ec; }
+[data-theme="dark"] .system-blueprints button.active { background: #243f51; border-color: #5eacd9; }
+[data-theme="dark"] .playground-readout { background: #26313e; color: #aebbc6; }
+
 .ai-panel {
   padding: 14px 16px 16px;
   display: flex;
