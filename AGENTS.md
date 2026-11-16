@@ -20,6 +20,13 @@ Available gstack skills:
 
 **Kit-of-Parts** is a client-side React SPA — a 3D interactive architectural configurator for modular/prefabricated building systems. Targets architects and engineers with focus on Japanese building standards (seismic, fire, Ken grid, CASBEE).
 
+### Assembly Lab rename program
+
+- **Assembly Lab** is the selected future product name; the current repository, Pages path, and runtime identity remain unchanged until their dedicated migration groups.
+- R0 is an evidence-only rename audit recorded in `docs/RENAME-R0-ASSEMBLY-LAB-AUDIT.md`.
+- Do not bulk-replace “kit of parts” across esen-vault: preserve generic construction terminology, quotations, event titles, lineage, and dated release history.
+- Planned sequence: R1 product identity, R2 repository/deployment cutover, R3 ecosystem references, R4 verification/cleanup. Commit and push after each group.
+
 **Dev server:** `npm run dev` (Vite on localhost:5173)
 **Build:** `npm run build` → `/dist/`
 **Deploy:** GitHub Pages — base path `/Kit-of-Parts/` (set in `vite.config.js`)
