@@ -7,11 +7,11 @@
 ![Three.js](https://img.shields.io/badge/Three.js-0.183-black?logo=three.js)
 ![GSAP](https://img.shields.io/badge/GSAP-3.15-88CE02)
 ![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite)
-[![Deploy](https://img.shields.io/badge/GitHub%20Pages-live-blue?logo=github)](https://onuresen.github.io/Kit-of-Parts/)
+[![Deploy](https://img.shields.io/badge/GitHub%20Pages-live-blue?logo=github)](https://onuresen.github.io/Assembly-Lab/)
 
 *An interactive studio for designing, assembling, delivering, and testing industrialized building systems.*
 
-**[→ Open Live Demo](https://onuresen.github.io/Kit-of-Parts/)**
+**[→ Open Live Demo](https://onuresen.github.io/Assembly-Lab/)**
 
 </div>
 

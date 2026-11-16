@@ -22,14 +22,14 @@ Available gstack skills:
 
 ### Assembly Lab rename program
 
-- **Assembly Lab** is the active product name. During R1 the repository and Pages path intentionally remain `Kit-of-Parts` until their R2 cutover.
+- **Assembly Lab** is the active product and repository name. R2 moved the Pages path to `/Assembly-Lab/` and preserved the former project URL through a redirect in `onuresen.github.io`.
 - R0 is an evidence-only rename audit recorded in `docs/RENAME-R0-ASSEMBLY-LAB-AUDIT.md`.
 - Do not bulk-replace “kit of parts” across esen-vault: preserve generic construction terminology, quotations, event titles, lineage, and dated release history.
 - Planned sequence: R1 product identity, R2 repository/deployment cutover, R3 ecosystem references, R4 verification/cleanup. Commit and push after each group.
 
 **Dev server:** `npm run dev` (Vite on localhost:5173)
 **Build:** `npm run build` → `/dist/`
-**Deploy:** GitHub Pages — base path `/Kit-of-Parts/` (set in `vite.config.js`)
+**Deploy:** GitHub Pages — base path `/Assembly-Lab/` (set in `vite.config.js`)
 **Deploy command:** `npm run deploy` (gh-pages)
 
 ---

@@ -547,7 +547,7 @@ export default function App() {
 
     ctx.font = `400 ${fs3}px "Segoe UI",system-ui,sans-serif`
     ctx.fillStyle = 'rgba(255,255,255,0.45)'
-    ctx.fillText('onuresen.github.io/Kit-of-Parts', bX + pad, bY + bH * 0.92)
+    ctx.fillText('onuresen.github.io/Assembly-Lab', bX + pad, bY + bH * 0.92)
 
     const link = document.createElement('a')
     link.download = 'assembly-lab.png'
@@ -562,7 +562,7 @@ export default function App() {
 
 Built in React + Three.js with real-time cost, carbon & IFC export.
 
-🔗 Try it live: https://onuresen.github.io/Kit-of-Parts/`
+🔗 Try it live: https://onuresen.github.io/Assembly-Lab/`
 
     try { await navigator.clipboard.writeText(caption) } catch { /* clipboard unavailable */ }
   }

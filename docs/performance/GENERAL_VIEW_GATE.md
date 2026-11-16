@@ -18,7 +18,7 @@ foundation, or used as the starting point for the IFC Sandbox.
 Open the application with `?perf=1`, for example:
 
 ```text
-http://localhost:5173/Kit-of-Parts/?perf=1
+http://localhost:5173/Assembly-Lab/?perf=1
 ```
 
 The page exposes a read-only diagnostic API in the browser console:

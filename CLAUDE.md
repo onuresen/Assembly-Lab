@@ -22,7 +22,7 @@ Available gstack skills:
 
 **Dev server:** `npm run dev` (Vite on localhost:5173)
 **Build:** `npm run build` → `/dist/`
-**Deploy:** GitHub Pages — base path `/Kit-of-Parts/` (set in `vite.config.js`)
+**Deploy:** GitHub Pages — base path `/Assembly-Lab/` (set in `vite.config.js`)
 **Deploy command:** `npm run deploy` (gh-pages)
 
 ---
