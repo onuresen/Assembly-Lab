@@ -64,6 +64,12 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 - `deliveryFlow.js` derives production batches, truck loads, site buffer steps, installation order, and explainable transport/lift/lead-time bottlenecks from the current parts and requirements.
 - `DeliveryFlowPanel.jsx` is a lightweight four-stage playback. It selects the current part in the shared 3D view but does not add another render loop or duplicate factory/crane state.
 
+### Group 4: scenario arena
+
+- `scenarioArena.js` gives earthquake, fire, wind, rain, supplier failure, and late-change scenarios the same decision structure: change, affected parts, consequence, and better alternative.
+- `ScenarioArenaPanel.jsx` is lazy-loaded. Running a physical scenario opens the existing effect and closes other continuous scenario effects; supplier and late-change cases open evidence/metrics without inventing animation.
+- Arena comparisons are indicative exposure reductions, not engineering predictions. Preserve affected-part traceability and plain-language caveats.
+
 ### State Management (3 layers)
 
 **1. `src/KitContext.jsx`** — persistent, survives re-renders

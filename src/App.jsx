@@ -15,6 +15,7 @@ const EarthquakePanel = lazy(() => import('./components/EarthquakePanel'))
 const FloorPlanPanel = lazy(() => import('./components/FloorPlanPanel'))
 const FirePanel = lazy(() => import('./components/FirePanel'))
 const DeliveryFlowPanel = lazy(() => import('./components/DeliveryFlowPanel'))
+const ScenarioArenaPanel = lazy(() => import('./components/ScenarioArenaPanel'))
 
 export default function App() {
   const { parts, presets, isLoading, duplicatePart, removePart, undo, redo, canUndo, canRedo } = useKit()
@@ -101,6 +102,7 @@ export default function App() {
 
   // ── Earthquake ───────────────────────────────────────────
   const [showEarthquake, setShowEarthquake] = useState(false)
+  const [showScenarioArena, setShowScenarioArena] = useState(false)
   const [earthquakeMagnitude, setEarthquakeMagnitude] = useState(6.0)
   const [isShaking, setIsShaking] = useState(false)
   const [hasShaken, setHasShaken] = useState(false)
@@ -272,6 +274,18 @@ export default function App() {
   const handleDeliverySelect = useCallback((partId) => {
     setSelected(current => current?.id === partId ? current : parts.find(part => part.id === partId) ?? null)
   }, [parts])
+
+  function activateScenario(scenarioId) {
+    setShowEarthquake(false)
+    setShowWindArrows(false)
+    setShowWaterSim(false)
+    setFireMode(false)
+    if (scenarioId === 'earthquake') setShowEarthquake(true)
+    else if (scenarioId === 'wind') setShowWindArrows(true)
+    else if (scenarioId === 'rain') setShowWaterSim(true)
+    else if (scenarioId === 'fire') { setFireMode(true); setFireState({}); setFireElapsed(0) }
+    else setShowMetrics(true)
+  }
 
   function handleDuplicate() {
     if (selected) duplicatePart(selected.id)
@@ -582,6 +596,8 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
         onToggleFireMode={handleToggleFireMode}
         showFireCompartments={showFireCompartments}
         onToggleFireCompartments={() => setShowFireCompartments(v => !v)}
+        showScenarioArena={showScenarioArena}
+        onToggleScenarioArena={() => setShowScenarioArena(value => !value)}
         mobileSidebarOpen={mobileSidebarOpen}
         onToggleMobileSidebar={() => setMobileSidebarOpen(v => !v)}
         onShare={handleShare}
@@ -775,6 +791,15 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           selectedVariants={selectedVariants}
           onSelectPart={handleDeliverySelect}
           onClose={() => setDeliveryMode(false)}
+        />
+      )}</Suspense>
+
+      <Suspense fallback={null}>{showScenarioArena && (
+        <ScenarioArenaPanel
+          selectedVariants={selectedVariants}
+          onActivate={activateScenario}
+          onSelectPart={handleDeliverySelect}
+          onClose={() => setShowScenarioArena(false)}
         />
       )}</Suspense>
 

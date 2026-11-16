@@ -193,6 +193,31 @@
 [data-theme="dark"] .delivery-flow-panel header strong { color: #e4edf4; }
 [data-theme="dark"] .delivery-stage { background: #25313d; }
 @media (max-width: 900px) { .delivery-flow-panel { left: 12px; right: 12px; bottom: 12px; } }
+.scenario-arena { position: fixed; top: 104px; left: 258px; z-index: 19; width: min(640px, calc(100vw - 590px)); padding: 14px; border-radius: 12px; background: rgba(255,255,255,.97); box-shadow: 0 10px 36px rgba(21,36,48,.2); backdrop-filter: blur(12px); font-family: 'Segoe UI', sans-serif; }
+.scenario-arena header, .scenario-arena footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.scenario-arena header div { display: flex; flex-direction: column; }
+.scenario-arena header span { color: #8a97a0; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.scenario-arena header strong { color: #263746; font-size: 18px; }
+.scenario-arena header button { border: 0; background: transparent; color: #64717b; cursor: pointer; }
+.scenario-picker { display: flex; gap: 4px; margin: 10px 0; overflow-x: auto; }
+.scenario-picker button { flex: 0 0 auto; border: 1px solid #dce3e8; border-radius: 14px; background: white; color: #63717c; padding: 5px 9px; font-size: 9px; cursor: pointer; }
+.scenario-picker button.active { border-color: #2c3e50; background: #2c3e50; color: white; }
+.scenario-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.scenario-answers article { min-width: 0; min-height: 76px; padding: 9px; border-radius: 7px; background: #f3f6f8; }
+.scenario-answers article > span { display: block; margin-bottom: 4px; color: #87949d; font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.scenario-answers article > strong { display: block; color: #34495e; font-size: 11px; line-height: 1.35; }
+.affected-parts { display: flex; gap: 3px; margin-top: 6px; overflow-x: auto; }
+.affected-parts button { flex: 0 0 auto; max-width: 100px; overflow: hidden; border: 0; border-radius: 3px; background: #e3e9ed; color: #50616e; padding: 3px 5px; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.scenario-compare { display: grid; gap: 3px; margin-top: 7px; }
+.scenario-compare i { display: block; min-width: 3px; height: 4px; border-radius: 2px; background: #e67e22; }
+.scenario-compare i.better { background: #39a66d; }
+.scenario-answers small { display: block; margin-top: 4px; color: #71808a; font-size: 8px; }
+.scenario-arena footer { margin-top: 10px; }
+.scenario-arena footer button { display: flex; align-items: center; gap: 5px; border: 0; border-radius: 5px; background: #2c3e50; color: white; padding: 7px 10px; font-size: 10px; cursor: pointer; }
+.scenario-severity { border-radius: 10px; padding: 4px 8px; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.scenario-severity--low { background: #e7f7ed; color: #24723c; }.scenario-severity--medium { background: #fff4d9; color: #986514; }.scenario-severity--high { background: #ffe8e1; color: #a9432d; }
+[data-theme="dark"] .scenario-arena { background: rgba(30,38,48,.97); }[data-theme="dark"] .scenario-arena header strong { color: #e4edf4; }[data-theme="dark"] .scenario-answers article { background: #25313d; }[data-theme="dark"] .scenario-answers article > strong { color: #d9e4eb; }
+@media (max-width: 900px) { .scenario-arena { left: 12px; right: 12px; top: 96px; width: auto; }.scenario-answers { grid-template-columns: 1fr; } }
 [data-theme="dark"] .system-blueprints button, [data-theme="dark"] .studio-details { background: #26313e; border-color: #3b4856; color: #dce5ec; }
 [data-theme="dark"] .system-blueprints button.active { background: #243f51; border-color: #5eacd9; }
 [data-theme="dark"] .playground-readout { background: #26313e; color: #aebbc6; }

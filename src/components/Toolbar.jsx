@@ -1,5 +1,5 @@
 import { createElement, useState } from 'react'
-import { MousePointer2, Pencil, Scissors, Copy, Trash2, Ruler, BarChart3, Map, Undo2, Redo2, Layers, Play, Zap, Moon, Sun, Keyboard, HardHat, Clapperboard, Activity, Wind, LayoutTemplate, Droplets, Menu, X, Flame, Shield, Thermometer, Volume2, Factory, Truck } from 'lucide-react'
+import { MousePointer2, Pencil, Scissors, Copy, Trash2, Ruler, BarChart3, Map, Undo2, Redo2, Layers, Play, Zap, Moon, Sun, Keyboard, HardHat, Clapperboard, Activity, Wind, LayoutTemplate, Droplets, Menu, X, Flame, Shield, Thermometer, Volume2, Factory, Truck, Swords } from 'lucide-react'
 import ShareButton from './ShareButton'
 
 const WORKSPACES = [['design', 'Design'], ['flow', 'Factory → Site'], ['test', 'Test'], ['review', 'Review']]
@@ -42,6 +42,7 @@ export default function Toolbar(p) {
         <Tool icon={Truck} label="Factory-to-site journey" active={p.deliveryMode} onClick={p.onToggleDelivery} disabled={p.gameMode} />
       </div>}
       {workspace === 'test' && <div className="toolbar-group">
+        <Tool icon={Swords} label="Scenario Arena" active={p.showScenarioArena} onClick={p.onToggleScenarioArena} disabled={p.factoryMode || p.gameMode} />
         <Tool icon={Activity} label="Earthquake" active={p.showEarthquake} onClick={p.onToggleEarthquake} disabled={p.factoryMode || p.gameMode} />
         <Tool icon={Wind} label="Wind" active={p.showWindArrows} onClick={p.onToggleWindArrows} disabled={p.siteMode || p.factoryMode || p.gameMode} />
         <Tool icon={Droplets} label="Rain and water" active={p.showWaterSim} onClick={p.onToggleWaterSim} disabled={p.siteMode || p.factoryMode || p.gameMode} />
