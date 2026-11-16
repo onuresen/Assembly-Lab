@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, ContactShadows, PerspectiveCamera, Environment, Sky, Clouds, Cloud, Stars } from '@react-three/drei'
 import { gsap } from 'gsap'
@@ -175,9 +175,22 @@ export default function Scene({
   fireIntensity,
   onIgnite,
   showFireCompartments,
+  deliveryJourney,
+  scenarioPresentation,
 }) {
   const controlsRef = useRef()
   const { parts } = useKit()
+  const reducedMotion = envSettings?.motion === 'reduced' || (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const ecoMode = envSettings?.quality === 'eco'
+  const selectionContext = useMemo(() => {
+    if (!selectedPartId) return new Set()
+    const context = new Set([selectedPartId])
+    for (const part of parts) {
+      if (part.id === selectedPartId) (part.connections ?? []).forEach(connection => context.add(connection.to))
+      if ((part.connections ?? []).some(connection => connection.to === selectedPartId)) context.add(part.id)
+    }
+    return context
+  }, [parts, selectedPartId])
 
   // Only effects that visibly change on every frame may select `always`.
   // Static panels/results and all GSAP transitions stay on demand; GsapBridge
@@ -199,9 +212,9 @@ export default function Scene({
   return (
     <Canvas
       frameloop={continuousActive ? 'always' : 'demand'}
-      dpr={[1, 1.5]}
+      dpr={ecoMode ? [1, 1] : [1, 1.5]}
       shadows={false}
-      style={{ position: 'absolute', inset: 0, background: siteMode || factoryMode ? '#eef2f7' : '#f4f4f4' }}
+      style={{ position: 'absolute', inset: 0, background: siteMode || factoryMode ? '#e8eef2' : '#dfe8e6' }}
       gl={{
         localClippingEnabled: true,
         toneMapping: THREE.ACESFilmicToneMapping,
@@ -220,7 +233,12 @@ export default function Scene({
       <ambientLight intensity={!siteMode && !factoryMode && envSettings && (envSettings.time < 6 || envSettings.time > 18) ? 0.2 : 0.8} />
       
       {/* ── Dynamic Sky and Sun ─────────────────────────── */}
-      <Environment preset="city" />
+      {!ecoMode && !scenarioPresentation && <Environment preset="city" />}
+      {scenarioPresentation && <>
+        <color attach="background" args={[({ earthquake: '#d7d9de', fire: '#ddd0c7', wind: '#cadbe2', rain: '#c3d0d3', supplier: '#d8d5c8', 'late-change': '#d8d0dc' })[scenarioPresentation.scenarioId] ?? '#dfe8e6']} />
+        <fog attach="fog" args={[({ fire: '#b47d63', rain: '#879da3', wind: '#9ab6c0' })[scenarioPresentation.scenarioId] ?? '#b8c4c5', 13, 34]} />
+        <hemisphereLight intensity={0.55} color="#dcecf0" groundColor="#58666a" />
+      </>}
       {(() => {
         if (siteMode || factoryMode || !envSettings) {
           return <directionalLight position={[5, 10, 5]} intensity={1} />
@@ -236,7 +254,7 @@ export default function Scene({
         
         return (
           <>
-            <Sky sunPosition={sunPos} turbidity={0.6} rayleigh={0.8} />
+            {!scenarioPresentation && <Sky sunPosition={sunPos} turbidity={0.6} rayleigh={0.8} />}
             {isDaytime && <directionalLight position={sunPos} intensity={Math.max(0, Math.sin(theta))} />}
             
             {envSettings.stars && (
@@ -290,6 +308,9 @@ export default function Scene({
             onGameClick={onGameClick}
             builderMode={builderMode}
             isSelected={selectedPartId === part.id}
+            hasSelection={Boolean(selectedPartId)}
+            inSelectionContext={selectionContext.has(part.id)}
+            reducedMotion={reducedMotion}
             isShaking={isShaking}
             earthquakeMagnitude={earthquakeMagnitude}
             highlightedWeek={highlightedWeek}
@@ -297,6 +318,8 @@ export default function Scene({
             fireMode={fireMode}
             fireStatus={fireState?.[part.id] ?? 'ok'}
             onIgnite={onIgnite}
+            deliveryJourney={deliveryJourney}
+            scenarioPresentation={scenarioPresentation}
           />
         )
       })}
@@ -322,7 +345,7 @@ export default function Scene({
       {!siteMode && !factoryMode && envSettings?.grass && (
         <mesh position={[0, -0.27, 0]} rotation={[-Math.PI / 2, 0, 0]} onClick={onClearSelect} receiveShadow>
           <planeGeometry args={[100, 100]} />
-          <meshStandardMaterial color="#557a2b" roughness={0.9} />
+          <meshStandardMaterial color="#70866d" roughness={0.96} />
         </mesh>
       )}
 
@@ -429,7 +452,7 @@ export default function Scene({
         opacity={0.28}
         scale={40}
         blur={1.5}
-        resolution={512}
+        resolution={ecoMode ? 256 : 512}
         frames={1}
       />
 

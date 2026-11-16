@@ -44,13 +44,15 @@ export default function App() {
   const [sectionCutActive, setSectionCutActive] = useState(false)
   const [sectionCutY, setSectionCutY] = useState(3.5)
 
-  const [envSettings, setEnvSettings] = useState({ grass: true, time: 12, clouds: false, stars: false, kenGrid: false })
+  const [envSettings, setEnvSettings] = useState({ grass: true, time: 12, clouds: false, stars: false, kenGrid: false, quality: 'high', motion: 'full' })
 
   const [siteMode, setSiteMode] = useState(false)
   const [placedUnits, setPlacedUnits] = useState([])
   const [selectedUnitType, setSelectedUnitType] = useState(null)
   const [factoryMode, setFactoryMode] = useState(false)
   const [deliveryMode, setDeliveryMode] = useState(false)
+  const [deliveryJourney, setDeliveryJourney] = useState(null)
+  const deliveryStageRef = useRef(null)
 
   const [builderMode, setBuilderMode] = useState(false)
   const [cameraCmd, setCameraCmd] = useState(null)
@@ -103,6 +105,7 @@ export default function App() {
   // ── Earthquake ───────────────────────────────────────────
   const [showEarthquake, setShowEarthquake] = useState(false)
   const [showScenarioArena, setShowScenarioArena] = useState(false)
+  const [scenarioPresentation, setScenarioPresentation] = useState(null)
   const [earthquakeMagnitude, setEarthquakeMagnitude] = useState(6.0)
   const [isShaking, setIsShaking] = useState(false)
   const [hasShaken, setHasShaken] = useState(false)
@@ -274,6 +277,14 @@ export default function App() {
   const handleDeliverySelect = useCallback((partId) => {
     setSelected(current => current?.id === partId ? current : parts.find(part => part.id === partId) ?? null)
   }, [parts])
+
+  const handleDeliveryStep = useCallback((journey) => {
+    setDeliveryJourney(journey)
+    if (!journey || deliveryStageRef.current === journey.stage) return
+    deliveryStageRef.current = journey.stage
+    const preset = journey.stage === 'factory' ? 'left' : journey.stage === 'transport' ? 'front' : journey.stage === 'site' ? 'right' : 'home'
+    setCameraCmd({ type: 'preset', preset, ts: Date.now() })
+  }, [])
 
   function activateScenario(scenarioId) {
     setShowEarthquake(false)
@@ -680,6 +691,8 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
         fireIntensity={fireIntensity}
         onIgnite={handleIgnite}
         showFireCompartments={showFireCompartments}
+        deliveryJourney={deliveryJourney}
+        scenarioPresentation={scenarioPresentation}
         selectedVariants={selectedVariants}
         onRendererReady={gl => { rendererRef.current = gl }}
         cinematicMode={cinematicMode}
@@ -790,7 +803,8 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
         <DeliveryFlowPanel
           selectedVariants={selectedVariants}
           onSelectPart={handleDeliverySelect}
-          onClose={() => setDeliveryMode(false)}
+          onStepChange={handleDeliveryStep}
+          onClose={() => { setDeliveryMode(false); setDeliveryJourney(null); deliveryStageRef.current = null }}
         />
       )}</Suspense>
 
@@ -799,7 +813,8 @@ Built in React + Three.js with real-time cost, carbon & IFC export.
           selectedVariants={selectedVariants}
           onActivate={activateScenario}
           onSelectPart={handleDeliverySelect}
-          onClose={() => setShowScenarioArena(false)}
+          onAnalysis={setScenarioPresentation}
+          onClose={() => { setShowScenarioArena(false); setScenarioPresentation(null) }}
         />
       )}</Suspense>
 

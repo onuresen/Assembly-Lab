@@ -43,6 +43,16 @@ function GlbMesh({ url, opacity, transparent, depthWrite, clippingPlanes, isWire
   return <primitive object={cloned} />
 }
 
+function SelectionAura({ size }) {
+  return (
+    <mesh scale={1.035} raycast={() => null}>
+      <boxGeometry args={size} />
+      <meshBasicMaterial color="#68d5ff" transparent opacity={0.075} depthWrite={false} />
+      <Edges threshold={12} color="#68d5ff" />
+    </mesh>
+  )
+}
+
 function Part({
   data,
   isExploded,
@@ -59,6 +69,9 @@ function Part({
   onGameClick,
   builderMode,
   isSelected,
+  hasSelection,
+  inSelectionContext,
+  reducedMotion,
   isShaking,
   earthquakeMagnitude,
   highlightedWeek,
@@ -66,12 +79,15 @@ function Part({
   fireMode,
   fireStatus,
   onIgnite,
+  deliveryJourney,
+  scenarioPresentation,
 }) {
   const meshRef = useRef()
   const { updatePart } = useKit()
   const [hovered, setHovered] = useState(false)
   const [flashState, setFlashState] = useState(null) // null | 'correct' | 'wrong'
   const prevSequenceStep = useRef(-1)
+  const deliveryWasActive = useRef(false)
 
   const baseColor = activeVariant?.color ?? data.variants[0].color
   const stcRating = inferStcRating(activeVariant)
@@ -209,6 +225,40 @@ function Part({
     return () => { document.body.style.cursor = 'auto' }
   }, [hovered])
 
+  useEffect(() => {
+    if (!meshRef.current || gameMode || isShaking) return
+    const scale = hovered ? 1.025 : isSelected ? 1.012 : 1
+    if (reducedMotion) {
+      meshRef.current.scale.setScalar(scale)
+      return
+    }
+    gsap.to(meshRef.current.scale, { x: scale, y: scale, z: scale, duration: 0.22, ease: 'power2.out', overwrite: 'auto' })
+  }, [hovered, isSelected, gameMode, isShaking, reducedMotion])
+
+  useEffect(() => {
+    if (!meshRef.current || sequenceMode || gameMode) return
+    const isActive = deliveryJourney?.partId === data.id
+    if (!isActive) {
+      if (deliveryWasActive.current) {
+        gsap.to(meshRef.current.position, { x: data.pos[0], y: data.pos[1], z: data.pos[2], duration: reducedMotion ? 0 : 0.55, ease: 'power2.out' })
+      }
+      deliveryWasActive.current = false
+      return
+    }
+    deliveryWasActive.current = true
+    const offsets = {
+      factory: [-5, 1.2, -3],
+      transport: [-2.5, 3.4, -4],
+      site: [0, 4.2, 0],
+      installed: [0, 0, 0],
+    }
+    const offset = offsets[deliveryJourney.stage] ?? offsets.installed
+    gsap.to(meshRef.current.position, {
+      x: data.pos[0] + offset[0], y: data.pos[1] + offset[1], z: data.pos[2] + offset[2],
+      duration: reducedMotion ? 0 : 0.58, ease: 'power3.inOut', overwrite: 'auto',
+    })
+  }, [deliveryJourney?.partId, deliveryJourney?.stage, data.id, data.pos, sequenceMode, gameMode, reducedMotion])
+
   function triggerFlash(type) {
     setFlashState(type)
     setTimeout(() => setFlashState(null), 600)
@@ -236,11 +286,13 @@ function Part({
     }
 
     // Normal mode
-    gsap.fromTo(
-      meshRef.current.scale,
-      { x: 1, y: 1, z: 1 },
-      { x: 1.05, y: 1.05, z: 1.05, duration: 0.1, yoyo: true, repeat: 1 }
-    )
+    if (!reducedMotion) {
+      gsap.fromTo(
+        meshRef.current.scale,
+        { x: 1, y: 1, z: 1 },
+        { x: 1.045, y: 1.045, z: 1.045, duration: 0.1, yoyo: true, repeat: 1 }
+      )
+    }
     onSelect({ ...data, meta: activeVariant?.meta ?? data.variants[0].meta })
   }
 
@@ -254,26 +306,33 @@ function Part({
   const partWeek = data.week ?? Math.ceil((data.sequence ?? 1) / 2)
   const isWeekHighlighted = highlightedWeek != null && partWeek === highlightedWeek
   const isWeekDimmed = highlightedWeek != null && partWeek !== highlightedWeek
+  const contextDimmed = hasSelection && !inSelectionContext && !fireMode && !isShaking
+  const scenarioAffected = scenarioPresentation?.affectedIds?.includes(data.id)
+  const scenarioDimmed = Boolean(scenarioPresentation?.affectedIds?.length) && !scenarioAffected && !isSelected
+  const scenarioAccent = scenarioPresentation?.viewMode === 'alternative' ? '#4fd18b' : '#ff8b5f'
   const emissive = fireStatus === 'burning' ? '#ff6600'
     : fireStatus === 'failed' ? '#330000'
     : flashState === 'correct' ? '#2ecc71'
     : flashState === 'wrong' ? '#e74c3c'
     : shakeAtRisk ? '#e74c3c'
     : isWeekHighlighted ? '#3498db'
+    : deliveryJourney?.partId === data.id ? '#ffb454'
+    : scenarioAffected ? scenarioAccent
+    : isSelected ? '#68d5ff'
     : showAcoustic ? acousticTint
     : color
   const emissiveIntensity = fireStatus === 'burning' ? 1.2
     : fireStatus === 'failed' ? 0.6
-    : flashState ? 1.5 : shakeAtRisk ? 0.8 : isWeekHighlighted ? 0.5 : showAcoustic ? 0.35 : (hovered && !isGhost ? 0.25 : 0)
+    : flashState ? 1.5 : shakeAtRisk ? 0.8 : isWeekHighlighted ? 0.5 : deliveryJourney?.partId === data.id ? 0.42 : scenarioAffected ? 0.38 : isSelected ? 0.34 : showAcoustic ? 0.35 : (hovered && !isGhost ? 0.22 : 0)
   const opacity = fireStatus === 'failed' ? 0.6
-    : isGhost ? 0.13 : isWeekDimmed ? 0.25 : (isWire ? 0.06 : isTrans ? 0.6 : 1)
-  const transparent = isGhost || isWire || isTrans || isWeekDimmed
-  const depthWrite = !isGhost && !isWire
+    : isGhost ? 0.13 : (isWeekDimmed || contextDimmed || scenarioDimmed) ? 0.24 : (isWire ? 0.06 : isTrans ? 0.6 : 1)
+  const transparent = isGhost || isWire || isTrans || isWeekDimmed || contextDimmed || scenarioDimmed
+  const depthWrite = !isGhost && !isWire && !contextDimmed && !scenarioDimmed
 
   // ── Edges color ──────────────────────────────────────────
   const edgesColor = isGhost
     ? (flashState === 'correct' ? '#2ecc71' : flashState === 'wrong' ? '#e74c3c' : color)
-    : (hovered ? '#ffffff' : isWire ? color : 'black')
+    : (isSelected ? '#68d5ff' : hovered ? '#dff7ff' : isWire ? color : '#1d2a33')
 
   // ── Label ────────────────────────────────────────────────
   const showNormalLabel = !gameMode && (hovered || isExploded || (sequenceMode && sequenceStep === data.sequence))
@@ -335,6 +394,7 @@ function Part({
           colorOverride={showAcoustic ? acousticTint : undefined}
         />
       </Suspense>
+      {isSelected && <SelectionAura size={data.size} />}
       {showLabel && (
         <Html position={[0, labelY, 0]} center distanceFactor={9} style={{ pointerEvents: 'none' }}>
           <div className={`part-label ${flashState === 'correct' ? 'part-label--correct' : flashState === 'wrong' ? 'part-label--wrong' : ''}`}>
@@ -399,6 +459,7 @@ function Part({
           <Edges threshold={15} color={edgesColor} />
         </mesh>
       )}
+      {isSelected && <SelectionAura size={data.size} />}
       {showLabel && (
         <Html position={[0, labelY, 0]} center distanceFactor={9} style={{ pointerEvents: 'none' }}>
           <div className={`part-label ${flashState === 'correct' ? 'part-label--correct' : flashState === 'wrong' ? 'part-label--wrong' : ''}`}>
@@ -435,6 +496,7 @@ function Part({
         clipShadows
       />
       <Edges threshold={15} color={edgesColor} />
+      {isSelected && <SelectionAura size={data.size} />}
 
       {showLabel && (
         <Html position={[0, labelY, 0]} center distanceFactor={9} style={{ pointerEvents: 'none' }}>

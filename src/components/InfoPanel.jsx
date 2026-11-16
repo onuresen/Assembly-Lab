@@ -310,6 +310,14 @@ export default function InfoPanel({
           <div className="ipr-section">
             <div className="ipr-section-label">Environment</div>
             <div className="ipr-env-controls">
+              <div className="experience-toggle" role="group" aria-label="Visual quality">
+                <button className={envSettings.quality !== 'eco' ? 'active' : ''} onClick={() => setEnvSettings(s => ({ ...s, quality: 'high' }))}>Beautiful</button>
+                <button className={envSettings.quality === 'eco' ? 'active' : ''} onClick={() => setEnvSettings(s => ({ ...s, quality: 'eco', clouds: false, stars: false }))}>Performance</button>
+              </div>
+              <div className="experience-toggle" role="group" aria-label="Motion preference">
+                <button className={envSettings.motion !== 'reduced' ? 'active' : ''} onClick={() => setEnvSettings(s => ({ ...s, motion: 'full' }))}>Full motion</button>
+                <button className={envSettings.motion === 'reduced' ? 'active' : ''} onClick={() => setEnvSettings(s => ({ ...s, motion: 'reduced' }))}>Reduced</button>
+              </div>
               <label className="ipr-env-row">
                 <span>Grass Floor</span>
                 <input type="checkbox" checked={envSettings.grass}

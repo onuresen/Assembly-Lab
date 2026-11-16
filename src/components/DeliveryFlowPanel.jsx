@@ -5,7 +5,7 @@ import { planDeliveryFlow } from '../utils/deliveryFlow'
 
 const STAGES = [['factory', 'Factory'], ['transport', 'Truck'], ['site', 'Site buffer'], ['installed', 'Installed']]
 
-export default function DeliveryFlowPanel({ selectedVariants, onSelectPart, onClose }) {
+export default function DeliveryFlowPanel({ selectedVariants, onSelectPart, onStepChange, onClose }) {
   const { parts, projectSettings } = useKit()
   const plan = useMemo(() => planDeliveryFlow(parts, selectedVariants, projectSettings.productSystem?.requirements), [parts, selectedVariants, projectSettings])
   const [stepIndex, setStepIndex] = useState(0)
@@ -21,7 +21,13 @@ export default function DeliveryFlowPanel({ selectedVariants, onSelectPart, onCl
     return () => clearInterval(timer)
   }, [playing, plan.steps.length])
 
-  useEffect(() => { if (step) onSelectPart(step.partId) }, [step, onSelectPart])
+  useEffect(() => {
+    if (!step) return
+    onSelectPart(step.partId)
+    onStepChange?.({ ...step, stepIndex, totalSteps: plan.steps.length })
+  }, [step, stepIndex, plan.steps.length, onSelectPart, onStepChange])
+
+  useEffect(() => () => onStepChange?.(null), [onStepChange])
 
   const completed = new Set(plan.steps.slice(0, stepIndex + 1).map(item => `${item.partId}:${item.stage}`))
 
@@ -37,6 +43,10 @@ export default function DeliveryFlowPanel({ selectedVariants, onSelectPart, onCl
           return <button key={part.id} className={`${completed.has(`${part.id}:${stageId}`) ? 'done' : ''}${active ? ' active' : ''}`} onClick={() => { const found = plan.steps.findIndex(item => item.partId === part.id && item.stage === stageId); setStepIndex(found); setPlaying(false) }} title={part.id}>{part.id}</button>
         })}
       </div></div>)}
+    </div>
+    <div className="journey-scrubber">
+      <input type="range" min="0" max={Math.max(0, plan.steps.length - 1)} value={stepIndex} onChange={event => { setStepIndex(Number(event.target.value)); setPlaying(false) }} aria-label="Delivery journey position" />
+      <div className="journey-route" aria-hidden="true"><span>Factory</span><span>Truck</span><span>Site</span><span>Building</span></div>
     </div>
     {step?.warnings.length > 0 && <div className="delivery-warning"><strong>Constraint to resolve</strong>{step.warnings.join(' · ')}</div>}
     <footer><button onClick={() => { setStepIndex(0); setPlaying(false) }}><RotateCcw size={14} /> Reset</button><button className="delivery-play" onClick={() => setPlaying(value => !value)}>{playing ? <Pause size={14} /> : <Play size={14} />}{playing ? 'Pause' : 'Play journey'}</button><span>{stepIndex + 1} / {plan.steps.length}</span></footer>

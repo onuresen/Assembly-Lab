@@ -70,6 +70,26 @@ No Tailwind — all styling is custom CSS in `src/App.css` plus inline styles. D
 - `ScenarioArenaPanel.jsx` is lazy-loaded. Running a physical scenario opens the existing effect and closes other continuous scenario effects; supplier and late-change cases open evidence/metrics without inventing animation.
 - Arena comparisons are indicative exposure reductions, not engineering predictions. Preserve affected-part traceability and plain-language caveats.
 
+### Group 5: visual and interaction language
+
+- The model is the hero. Selection uses a restrained cyan aura, keeps directly connected parts legible, and fades unrelated context without hiding evidence.
+- UI surfaces use the shared ink/teal/glass tokens in `App.css`; workspace, toolbar, sidebar, inspector, labels, and dark mode should evolve as one visual system.
+- `envSettings.quality` offers Beautiful and Performance modes. Performance mode caps DPR at 1, skips the environment map, and lowers contact-shadow resolution.
+- `envSettings.motion` plus the operating-system reduced-motion preference suppresses tactile scale animation. CSS also collapses non-essential transitions and entrance animations under reduced motion.
+- Motion should explain state or acknowledge input. Do not add permanent particles, pulsing labels, or decorative continuous rendering.
+
+### Group 7: cinematic factory-to-site
+
+- Delivery playback drives the actual selected part through relative factory, transport, site-buffer, and installed positions, while existing camera commands frame each stage.
+- `DeliveryFlowPanel` owns play/pause and timeline scrubbing and reports the current derived step to `App`; closing the journey clears the state and returns any active part to its authored position.
+- The movement is GSAP-driven through the existing demand-render invalidation bridge. Do not add a permanent render loop for delivery playback.
+
+### Group 8: expressive scenario arena
+
+- Scenario selection sets a restrained environmental mood and spatially highlights the affected part IDs returned by the existing deterministic analysis.
+- Baseline/Alternative changes the displayed affected subset and color language only; it does not mutate authored products or claim a verified engineering improvement.
+- Physical scenario buttons still activate the existing wind, rain, fire, or earthquake visualization. Environmental mood and evidence highlighting remain static and demand-rendered.
+
 ### State Management (3 layers)
 
 **1. `src/KitContext.jsx`** — persistent, survives re-renders
